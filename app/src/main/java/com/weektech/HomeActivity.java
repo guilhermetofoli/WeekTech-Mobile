@@ -9,19 +9,19 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
+/**
+ * Tela principal do app
+ * Responsável por listar as palestras e navegar entre telas
+ */
+
+public class HomeActivity extends AppCompatActivity
+        implements PalestraAdapter.OnItemClickListener {
+
+    private RecyclerView rvPalestras;
+    private PalestraAdapter adapter;
+    private PalestraDao palestraDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-        RecyclerView rv = findViewById(R.id.rvPalestras);
-        rv.setLayoutManager(new LinearLayoutManager(this));
-
-        List<Palestra> lista = new ArrayList<>();
-        lista.add(new Palestra("React para Iniciantes", "Palestrante 01", "23/04 - 19:30", "Auditório 1", R.drawable.ic_launcher_background));
-        lista.add(new Palestra("O Futuro do Desenvolvimento", "Palestrante 02", "24/04 - 20:00", "Lab 02", R.drawable.ic_launcher_background));
-
-        PalestraAdapter adapter = new PalestraAdapter(lista);
-        rv.setAdapter(adapter);
-    }
-}
