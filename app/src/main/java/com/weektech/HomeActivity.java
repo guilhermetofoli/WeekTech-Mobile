@@ -61,3 +61,14 @@ public class HomeActivity extends AppCompatActivity
                 startActivity(new Intent(this, AdminActivity.class))
         );
     }
+
+    /**
+     * Clique no botão "Inscrever-se"
+     */
+    @Override
+    public void onInscricaoClick(Palestra palestra) {
+        Intent intent = new Intent(this, InscricaoActivity.class);
+        intent.putExtra("PALESTRA_ID", palestra.id);
+        intent.putExtra("PALESTRA_TITULO", palestra.titulo);
+        startActivity(intent);
+    }
