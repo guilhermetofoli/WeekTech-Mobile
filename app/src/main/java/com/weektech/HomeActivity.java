@@ -72,3 +72,14 @@ public class HomeActivity extends AppCompatActivity
         intent.putExtra("PALESTRA_TITULO", palestra.titulo);
         startActivity(intent);
     }
+
+    /**
+     * Clique no card da palestra (abre detalhes)
+     */
+    @Override
+    public void onItemClick(Palestra palestra) {
+        Intent intent = new Intent(this, PalestraDetailActivity.class);
+        intent.putExtra("PALESTRA_ID", palestra.id);
+        startActivity(intent);
+    }
+}
