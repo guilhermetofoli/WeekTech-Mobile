@@ -25,3 +25,24 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // Inicializa RecyclerView
+        rvPalestras = findViewById(R.id.rvPalestras);
+        rvPalestras.setLayoutManager(new LinearLayoutManager(this));
+
+        // Adapter começa com lista vazia
+        adapter = new PalestraAdapter(new ArrayList<>(), this);
+        rvPalestras.setAdapter(adapter);
+
+        // Conecta com banco de dados (Room)
+        palestraDao = AppDatabase.getInstance(this).palestraDao();
+
+        // Observa mudanças na lista de palestras (LiveData)
+        palestraDao.listarAtivas().observe(this, new Observer<List<Palestra>>() {
+            @Override
+            public void onChanged(List<Palestra> palestras) {
+                // Atualiza a lista na tela automaticamente
+                adapter.setPalestras(palestras);
+            }
+        });
+
