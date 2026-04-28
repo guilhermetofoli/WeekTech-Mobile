@@ -1,6 +1,9 @@
 package com.weektech;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,3 +49,15 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+        // Botão para tela de cadastro de projetos
+        Button btnCadastroProjeto = findViewById(R.id.btnCadastroProjeto);
+        btnCadastroProjeto.setOnClickListener(v ->
+                startActivity(new Intent(this, ProjetoActivity.class))
+        );
+
+        // Botão para tela de administração
+        Button btnAdmin = findViewById(R.id.btnAdmin);
+        btnAdmin.setOnClickListener(v ->
+                startActivity(new Intent(this, AdminActivity.class))
+        );
+    }
