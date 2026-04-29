@@ -1,5 +1,5 @@
 
-package com.weektech.adapter;
+package com.weektech;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.weektech.R;
 import com.weektech.model.Palestra;
 
 import java.util.ArrayList;
