@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_schedule"
+        android:icon="@drawable/ic_calendar"
+        android:title="Schedule" />
+
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/ic_person"
+        android:title="Perfil" />
+
+    <item
+        android:id="@+id/nav_messages"
+        android:icon="@drawable/ic_message"
+        android:title="Messages" />
+
+    <item
+        android:id="@+id/nav_my_events"
+        android:icon="@drawable/ic_star"
+        android:title="My Events" />
+
+</menu>
