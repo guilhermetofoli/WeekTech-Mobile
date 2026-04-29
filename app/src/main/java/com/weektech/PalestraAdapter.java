@@ -1,6 +1,9 @@
-// adapter/PalestraAdapter.java
+
 package com.weektech.adapter;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,108 +16,167 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.weektech.R;
 import com.weektech.model.Palestra;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Adapter responsável por ligar os dados (Palestra)
- * com a RecyclerView (lista na tela)
- */
-public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.PalestraViewHolder> {
+public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHolder> {
+    private List<Palestra> palestras = new ArrayList<>();
 
-    // Lista de palestras exibidas
-    private List<Palestra> palestras;
+    private final Context context;
 
-    /**
-     * Interface para capturar eventos de clique
-     * (usada pela Activity)
-     */
-    public interface OnItemClickListener {
-        void onInscricaoClick(Palestra palestra); // botão inscrever
-        void onItemClick(Palestra palestra);      // clique no card
+    // Interface de callbacks para a Activity/Fragment
+    public interface OnPalestraClickListener {
+        void onInscreverClick(Palestra palestra, int position);
+
+        void onInscritoClick(Palestra palestra, int position);
+
+        void onVisualizarClick(Palestra palestra, int position);
+
+        void onCardClick(Palestra palestra, int position);
     }
 
-    private OnItemClickListener listener;
+    private OnPalestraClickListener listener;
 
-    /**
-     * Construtor do Adapter
-     */
-    public PalestraAdapter(List<Palestra> palestras, OnItemClickListener listener) {
-        this.palestras = palestras;
-        this.listener  = listener;
+    // Construtor
+    public PalestraAdapter(Context context, OnPalestraClickListener listener) {
+        this.context  = context;
+        this.listener = listener;
     }
 
-    /**
-     * Atualiza a lista de palestras e recarrega a tela
-     */
-    public void setPalestras(List<Palestra> palestras) {
-        this.palestras = palestras;
-        notifyDataSetChanged(); // atualiza RecyclerView
+    // Atualiza a lista e recarrega o RecyclerView
+    public void setPalestras(List<Palestra> novaLista) {
+        this.palestras = novaLista != null ? novaLista : new ArrayList<>();
+        notifyDataSetChanged();
     }
 
-    /**
-     * Cria a estrutura do item (layout XML)
-     */
+    // Atualiza o status de um card específico sem recarregar tudo
+    public void atualizarStatus(int position, String novoStatus) {
+        if (position >= 0 && position < palestras.size()) {
+            palestras.get(position).statusInscricao = novoStatus;
+            notifyItemChanged(position); // anima apenas o item alterado
+        }
+    }
+
+
     @NonNull
     @Override
-    public PalestraViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Infla o layout do card
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_palestra, parent, false);
-        return new PalestraViewHolder(view);
+                .inflate(R.layout.item_palestra_card, parent, false);
+        return new ViewHolder(view);
     }
 
-    /**
-     * Liga os dados da palestra com os componentes da tela
-     */
     @Override
-    public void onBindViewHolder(@NonNull PalestraViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Palestra palestra = palestras.get(position);
 
-        // Pega a palestra da posição atual
-        Palestra p = palestras.get(position);
+        //  Preenche os campos de texto
+        holder.tvHoraInicio.setText(palestra.horaInicio);   // "09:00"
+        holder.tvHoraFim.setText(palestra.horaFim);         // "10:30"
+        holder.tvTitulo.setText(palestra.titulo);
+        holder.tvPalestrante.setText(
+                "Palestrante: " + palestra.palestrante);
+        holder.tvLocal.setText(palestra.local);
 
-        // Preenche os campos do layout
-        holder.tvTitulo.setText(p.titulo);
-        holder.tvPalestrante.setText(p.palestrante);
-        holder.tvHorario.setText(p.horario);
-        holder.tvLocal.setText(p.local);
+        // Configura o botão conforme o status
+        configurarBotao(holder.btnAcao, palestra.statusInscricao);
 
-        // Evento de clique no botão "Inscrever-se"
-        holder.btnInscrever.setOnClickListener(v ->
-                listener.onInscricaoClick(p)
-        );
+        // Click no botão
+        holder.btnAcao.setOnClickListener(v -> {
+            if (listener == null) return;
+            switch (palestra.statusInscricao) {
+                case Palestra.StatusInscricao.DISPONIVEL:
+                    listener.onInscreverClick(palestra, holder.getAdapterPosition());
+                    break;
+                case Palestra.StatusInscricao.INSCRITO:
+                    listener.onInscritoClick(palestra, holder.getAdapterPosition());
+                    break;
+                case Palestra.StatusInscricao.VISUALIZAR:
+                    listener.onVisualizarClick(palestra, holder.getAdapterPosition());
+                    break;
+            }
+        });
 
-        // Evento de clique no card inteiro
-        holder.itemView.setOnClickListener(v ->
-                listener.onItemClick(p)
-        );
+        // Click no card inteiro → vai para detalhes
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null)
+                listener.onCardClick(palestra, holder.getAdapterPosition());
+        });
     }
 
-    /**
-     * Retorna quantidade de itens da lista
-     */
     @Override
     public int getItemCount() {
-        return palestras != null ? palestras.size() : 0;
+        return palestras.size();
     }
 
-    /**
-     * ViewHolder: representa cada item da lista
-     */
-    static class PalestraViewHolder extends RecyclerView.ViewHolder {
+    // Método que troca o visual do botão conforme o status
+    private void configurarBotao(Button btn, String status) {
+        switch (status) {
 
-        TextView tvTitulo, tvPalestrante, tvHorario, tvLocal;
-        Button btnInscrever;
+            // DISPONIVEL: fundo azul sólido
+            case Palestra.StatusInscricao.DISPONIVEL:
+                btn.setText("Inscrever-se");
+                btn.setTextColor(Color.WHITE);
+                btn.setBackgroundTintList(
+                        ColorStateList.valueOf(Color.parseColor("#1B3A6B")));
+                // Remove borda caso tenha sido definida antes
+                if (btn instanceof com.google.android.material.button.MaterialButton) {
+                    ((com.google.android.material.button.MaterialButton) btn)
+                            .setStrokeWidth(0);
+                }
+                break;
 
-        /**
-         * Construtor que conecta os elementos do XML
-         */
-        PalestraViewHolder(View itemView) {
+            // INSCRITO: fundo branco + borda verde + texto verde
+            case Palestra.StatusInscricao.INSCRITO:
+                btn.setText("Inscrito");
+                btn.setTextColor(Color.parseColor("#28A745"));
+                btn.setBackgroundTintList(
+                        ColorStateList.valueOf(Color.WHITE));
+                if (btn instanceof com.google.android.material.button.MaterialButton) {
+                    com.google.android.material.button.MaterialButton mb =
+                            (com.google.android.material.button.MaterialButton) btn;
+                    mb.setStrokeColor(
+                            ColorStateList.valueOf(Color.parseColor("#28A745")));
+                    mb.setStrokeWidth(4); // ~1.5dp em pixels
+                }
+                break;
+
+            // VISUALIZAR: fundo branco + borda azul + texto azul
+            case Palestra.StatusInscricao.VISUALIZAR:
+            default:
+                btn.setText("Visualizar");
+                btn.setTextColor(Color.parseColor("#1B3A6B"));
+                btn.setBackgroundTintList(
+                        ColorStateList.valueOf(Color.WHITE));
+                if (btn instanceof com.google.android.material.button.MaterialButton) {
+                    com.google.android.material.button.MaterialButton mb =
+                            (com.google.android.material.button.MaterialButton) btn;
+                    mb.setStrokeColor(
+                            ColorStateList.valueOf(Color.parseColor("#1B3A6B")));
+                    mb.setStrokeWidth(4);
+                }
+                break;
+        }
+    }
+
+    // ViewHolder: referências às views do card
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView tvHoraInicio; // "09:00"
+        TextView tvHoraFim;    // "10:30"
+        TextView tvTitulo;
+        TextView tvPalestrante;
+        TextView tvLocal;
+        Button   btnAcao;      // botão dinâmico
+
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
-
+            tvHoraInicio  = itemView.findViewById(R.id.tvHoraInicio);
+            tvHoraFim     = itemView.findViewById(R.id.tvHoraFim);
             tvTitulo      = itemView.findViewById(R.id.tvTitulo);
             tvPalestrante = itemView.findViewById(R.id.tvPalestrante);
-            tvHorario     = itemView.findViewById(R.id.tvHorario);
             tvLocal       = itemView.findViewById(R.id.tvLocal);
-            btnInscrever  = itemView.findViewById(R.id.btnInscrever);
+            btnAcao       = itemView.findViewById(R.id.btnAcao);
         }
     }
 }
