@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+
+    <style name="BtnInscricaoDisponivel" parent="Widget.MaterialComponents.Button">
+
+        <item name="backgroundTint">#1B3A6B</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="elevation">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="BtnInscricaoInscrito" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="backgroundTint">#FFFFFF</item>
+        <item name="strokeColor">#28A745</item>
+        <item name="strokeWidth">1.5dp</item>
+        <item name="android:textColor">#28A745</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="elevation">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="BtnInscricaoVisualizar" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="backgroundTint">#FFFFFF</item>
+        <item name="strokeColor">#1B3A6B</item>
+        <item name="strokeWidth">1.5dp</item>
+        <item name="android:textColor">#1B3A6B</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="elevation">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
+    <!-- ════════════════════════════════════════════════
+         BOTTOM NAV: seletor de cor dos ícones e textos
+         Usado como app:itemIconTint e app:itemTextColor
+         Arquivo: res/drawable/bottom_nav_color_selector.xml
+         ════════════════════════════════════════════════ -->
+    <!-- Crie também: res/drawable/bottom_nav_color_selector.xml
+         com o conteúdo abaixo:
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <selector xmlns:android="http://schemas.android.com/apk/res/android">
+        <item android:color="#1B3A6B" android:state_checked="true"/>
+        <item android:color="#9AA5B4"/>
+    </selector>
+    -->
+
+</resources>
