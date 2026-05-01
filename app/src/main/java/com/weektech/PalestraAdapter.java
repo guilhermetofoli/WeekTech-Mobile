@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.weektech.model.Palestra;
+import com.weektech.Palestra;
 
 import java.util.ArrayList;
 import java.util.List;
