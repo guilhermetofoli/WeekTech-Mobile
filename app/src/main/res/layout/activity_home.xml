@@ -30,7 +30,7 @@
                 android:layout_width="52dp"
                 android:layout_height="52dp"
                 android:contentDescription="Logo UniCesumar"
-                android:src="@drawable/ic_logo_unicesumar" />
+                android:src="@drawable/logo_unicesumar" />
 
 
             <TextView
