@@ -13,7 +13,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.weektech.adapter.DiasPagerAdapter;
 import com.weektech.util.SessionManager;
 
 public class HomeActivity extends AppCompatActivity {
@@ -34,8 +33,8 @@ public class HomeActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottomNav);
 
         // ViewPager com os 3 dias
-        DiasPagerAdapter pagerAdapter = new DiasPagerAdapter(this);
-        viewPager.setAdapter(pagerAdapter);
+        // DiasPagerAdapter pagerAdapter = new DiasPagerAdapter(this);
+        // viewPager.setAdapter(pagerAdapter);
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             tab.setText("Dia " + (position + 1));
@@ -48,10 +47,10 @@ public class HomeActivity extends AppCompatActivity {
                 // Já está aqui
                 return true;
             } else if (id == R.id.nav_perfil) {
-                startActivity(new Intent(this, PerfilActivity.class));
+                //startActivity(new Intent(this, PerfilActivity.class));
                 return true;
             } else if (id == R.id.nav_projetos) {
-                startActivity(new Intent(this, ProjetoActivity.class));
+                //startActivity(new Intent(this, ProjetoActivity.class));
                 return true;
             } else if (id == R.id.nav_admin) {
                 if (session.isAdmin()) {
