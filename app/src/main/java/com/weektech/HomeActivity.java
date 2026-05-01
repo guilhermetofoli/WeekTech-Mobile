@@ -2,84 +2,72 @@ package com.weektech;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import java.util.ArrayList;
-import java.util.List;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.weektech.adapter.DiasPagerAdapter;
+import com.weektech.util.SessionManager;
 
 public class HomeActivity extends AppCompatActivity {
 
-/**
- * Tela principal do app
- * Responsável por listar as palestras e navegar entre telas
- */
-
-public class HomeActivity extends AppCompatActivity
-        implements PalestraAdapter.OnItemClickListener {
-
-    private RecyclerView rvPalestras;
-    private PalestraAdapter adapter;
-    private PalestraDao palestraDao;
+    private TabLayout    tabLayout;
+    private ViewPager2   viewPager;
+    private BottomNavigationView bottomNav;
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Inicializa RecyclerView
-        rvPalestras = findViewById(R.id.rvPalestras);
-        rvPalestras.setLayoutManager(new LinearLayoutManager(this));
+        session   = new SessionManager(this);
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager = findViewById(R.id.viewPager);
+        bottomNav = findViewById(R.id.bottomNav);
 
-        // Adapter começa com lista vazia
-        adapter = new PalestraAdapter(new ArrayList<>(), this);
-        rvPalestras.setAdapter(adapter);
+        // ViewPager com os 3 dias
+        DiasPagerAdapter pagerAdapter = new DiasPagerAdapter(this);
+        viewPager.setAdapter(pagerAdapter);
 
-        // Conecta com banco de dados (Room)
-        palestraDao = AppDatabase.getInstance(this).palestraDao();
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            tab.setText("Dia " + (position + 1));
+        }).attach();
 
-        // Observa mudanças na lista de palestras (LiveData)
-        palestraDao.listarAtivas().observe(this, new Observer<List<Palestra>>() {
-            @Override
-            public void onChanged(List<Palestra> palestras) {
-                // Atualiza a lista na tela automaticamente
-                adapter.setPalestras(palestras);
+        // Bottom Navigation
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_schedule) {
+                // Já está aqui
+                return true;
+            } else if (id == R.id.nav_perfil) {
+                startActivity(new Intent(this, PerfilActivity.class));
+                return true;
+            } else if (id == R.id.nav_projetos) {
+                startActivity(new Intent(this, ProjetoActivity.class));
+                return true;
+            } else if (id == R.id.nav_admin) {
+                if (session.isAdmin()) {
+                    startActivity(new Intent(this, AdminActivity.class));
+                } else {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Acesso Restrito")
+                            .setMessage("Área exclusiva para administradores.")
+                            .setPositiveButton("OK", null)
+                            .show();
+                }
+                return true;
             }
+            return false;
         });
-
-        // Botão para tela de cadastro de projetos
-        Button btnCadastroProjeto = findViewById(R.id.btnCadastroProjeto);
-        btnCadastroProjeto.setOnClickListener(v ->
-                startActivity(new Intent(this, ProjetoActivity.class))
-        );
-
-        // Botão para tela de administração
-        Button btnAdmin = findViewById(R.id.btnAdmin);
-        btnAdmin.setOnClickListener(v ->
-                startActivity(new Intent(this, AdminActivity.class))
-        );
-    }
-
-    /**
-     * Clique no botão "Inscrever-se"
-     */
-    @Override
-    public void onInscricaoClick(Palestra palestra) {
-        Intent intent = new Intent(this, InscricaoActivity.class);
-        intent.putExtra("PALESTRA_ID", palestra.id);
-        intent.putExtra("PALESTRA_TITULO", palestra.titulo);
-        startActivity(intent);
-    }
-
-    /**
-     * Clique no card da palestra (abre detalhes)
-     */
-    @Override
-    public void onItemClick(Palestra palestra) {
-        Intent intent = new Intent(this, PalestraDetailActivity.class);
-        intent.putExtra("PALESTRA_ID", palestra.id);
-        startActivity(intent);
     }
 }
+
+
