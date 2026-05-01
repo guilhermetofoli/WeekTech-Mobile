@@ -14,11 +14,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.weektech.adapter.PalestraAdapter;
-import com.weektech.database.AppDatabase;
-import com.weektech.database.dao.InscricaoDao;
-import com.weektech.database.dao.PalestraDao;
-import com.weektech.model.Palestra;
+import com.weektech.PalestraAdapter;
+import com.weektech.AppDatabase;
+import com.weektech.InscricaoDao;
+import com.weektech.PalestraDao;
+import com.weektech.Palestra;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,13 +111,13 @@ public class PalestrasDiaFragment extends Fragment
         });
     }
 
-    @Override
-    public void onInscreverClick(Palestra palestra, int position) {
-        Intent intent = new Intent(getContext(), InscricaoActivity.class);
-        intent.putExtra("PALESTRA_ID",     palestra.id);
-        intent.putExtra("PALESTRA_TITULO", palestra.titulo);
-        startActivity(intent);
-    }
+    //@Override
+    //public void onInscreverClick(Palestra palestra, int position) {
+        //Intent intent = new Intent(getContext(), InscricaoActivity.class);
+        //intent.putExtra("PALESTRA_ID",     palestra.id);
+        //intent.putExtra("PALESTRA_TITULO", palestra.titulo);
+        //startActivity(intent);
+    //}
 
     @Override
     public void onInscritoClick(Palestra palestra, int position) {
@@ -130,17 +130,26 @@ public class PalestrasDiaFragment extends Fragment
     // usuario clicou em "Visualizar" → abre detalhes (somente leitura)
     @Override
     public void onVisualizarClick(Palestra palestra, int position) {
-        Intent intent = new Intent(getContext(), PalestraDetailActivity.class);
-        intent.putExtra("PALESTRA_ID", palestra.id);
-        startActivity(intent);
+        //Intent intent = new Intent(getContext(), PalestraDetailActivity.class);
+        //intent.putExtra("PALESTRA_ID", palestra.id);
+        //startActivity(intent);
     }
 
     // usuario clicou no card → abre detalhes
     @Override
     public void onCardClick(Palestra palestra, int position) {
-        Intent intent = new Intent(getContext(), PalestraDetailActivity.class);
-        intent.putExtra("PALESTRA_ID", palestra.id);
-        startActivity(intent);
+        //Intent intent = new Intent(getContext(), PalestraDetailActivity.class);
+        //intent.putExtra("PALESTRA_ID", palestra.id);
+        //startActivity(intent);
+    }
+
+    @Override
+    public void onInscreverClick(Palestra palestra, int position) {
+        // Aqui você coloca a lógica do que acontece quando o usuário clica no botão
+        // Exemplo: Abrir a tela de inscrição ou processar o clique
+        //Intent intent = new Intent(getContext(), InscricaoActivity.class);
+        //intent.putExtra("palestra_id", palestra.id);
+        //startActivity(intent);
     }
 
     private String obterRaUsuarioLogado() {
