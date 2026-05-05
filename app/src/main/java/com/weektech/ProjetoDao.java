@@ -1,4 +1,19 @@
 package com.weektech;
 
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
+import java.util.List;
+
+@Dao
 public interface ProjetoDao {
+
+    @Insert
+    long inserir(Projeto projeto);
+
+    @Query("SELECT * FROM projetos ORDER BY nomeProjeto ASC")
+    List<Projeto> listarTodos();
+
+    @Query("SELECT COUNT(*) FROM projetos WHERE ra = :ra")
+    int verificarProjetoExistente(String ra);
 }
