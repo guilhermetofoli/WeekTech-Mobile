@@ -52,7 +52,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
     public void atualizarStatus(int position, String novoStatus) {
         if (position >= 0 && position < palestras.size()) {
             palestras.get(position).statusInscricao = novoStatus;
-            notifyItemChanged(position); // anima apenas o item alterado
+            notifyItemChanged(position);
         }
     }
 
@@ -60,7 +60,6 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Infla o layout do card
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_palestra_card, parent, false);
         return new ViewHolder(view);
@@ -71,14 +70,13 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
         Palestra palestra = palestras.get(position);
 
         //  Preenche os campos de texto
-        holder.tvHoraInicio.setText(palestra.horaInicio);   // "09:00"
-        holder.tvHoraFim.setText(palestra.horaFim);         // "10:30"
+        holder.tvHoraInicio.setText(palestra.horaInicio);
+        holder.tvHoraFim.setText(palestra.horaFim);
         holder.tvTitulo.setText(palestra.titulo);
         holder.tvPalestrante.setText(
                 "Palestrante: " + palestra.palestrante);
         holder.tvLocal.setText(palestra.local);
 
-        // Configura o botão conforme o status
         configurarBotao(holder.btnAcao, palestra.statusInscricao);
 
         // Click no botão
@@ -113,20 +111,17 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
     private void configurarBotao(Button btn, String status) {
         switch (status) {
 
-            // DISPONIVEL: fundo azul sólido
             case Palestra.StatusInscricao.DISPONIVEL:
                 btn.setText("Inscrever-se");
                 btn.setTextColor(Color.WHITE);
                 btn.setBackgroundTintList(
                         ColorStateList.valueOf(Color.parseColor("#1B3A6B")));
-                // Remove borda caso tenha sido definida antes
                 if (btn instanceof com.google.android.material.button.MaterialButton) {
                     ((com.google.android.material.button.MaterialButton) btn)
                             .setStrokeWidth(0);
                 }
                 break;
 
-            // INSCRITO: fundo branco + borda verde + texto verde
             case Palestra.StatusInscricao.INSCRITO:
                 btn.setText("Inscrito");
                 btn.setTextColor(Color.parseColor("#28A745"));
@@ -137,11 +132,10 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
                             (com.google.android.material.button.MaterialButton) btn;
                     mb.setStrokeColor(
                             ColorStateList.valueOf(Color.parseColor("#28A745")));
-                    mb.setStrokeWidth(4); // ~1.5dp em pixels
+                    mb.setStrokeWidth(4);
                 }
                 break;
 
-            // VISUALIZAR: fundo branco + borda azul + texto azul
             case Palestra.StatusInscricao.VISUALIZAR:
             default:
                 btn.setText("Visualizar");
@@ -159,14 +153,13 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
         }
     }
 
-    // ViewHolder: referências às views do card
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvHoraInicio; // "09:00"
-        TextView tvHoraFim;    // "10:30"
+        TextView tvHoraInicio;
+        TextView tvHoraFim;
         TextView tvTitulo;
         TextView tvPalestrante;
         TextView tvLocal;
-        Button   btnAcao;      // botão dinâmico
+        Button   btnAcao;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);

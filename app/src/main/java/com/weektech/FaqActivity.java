@@ -46,7 +46,6 @@ public class FaqActivity extends AppCompatActivity {
         rvFaq.setAdapter(new FaqAdapter(faqItems));
     }
 
-    // ─── Model ───────────────────────────────────────────────
     static class FaqItem {
         String pergunta, resposta;
         boolean expandido = false;
@@ -57,7 +56,6 @@ public class FaqActivity extends AppCompatActivity {
         }
     }
 
-    // ─── Adapter ─────────────────────────────────────────────
     static class FaqAdapter extends RecyclerView.Adapter<FaqAdapter.VH> {
 
         private final List<FaqItem> items;

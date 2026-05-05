@@ -16,7 +16,6 @@ public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdap
     private List<Palestra> palestras = new ArrayList<>();
     private final OnAdminActionListener listener;
 
-    // Interface que a sua AdminActivity vai implementar
     public interface OnAdminActionListener {
         void onToggleAtiva(Palestra palestra);
         void onDeletePalestra(Palestra palestra);

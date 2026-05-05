@@ -16,7 +16,6 @@ public interface PalestraDao {
     @Query("SELECT * FROM palestras ORDER BY id DESC")
     LiveData<List<Palestra>> listarTodas();
 
-    // ADICIONE ESTE MÉTODO AQUI:
     @Query("SELECT * FROM palestras WHERE dia = :diaParam AND ativa = 1")
     LiveData<List<Palestra>> listarPorDia(int diaParam);
 

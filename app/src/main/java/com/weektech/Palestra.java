@@ -12,11 +12,11 @@ public class Palestra {
 
     public String titulo;
     public String palestrante;
-    public String email;      // Adicionado
-    public String telefone;   // Adicionado
-    public String briefing;   // Adicionado
-    public String curriculo;  // Adicionado
-    public int    tempo;      // Adicionado
+    public String email;
+    public String telefone;
+    public String briefing;
+    public String curriculo;
+    public int    tempo;
     public String horaInicio;
     public String horaFim;
     public String local;
@@ -35,7 +35,6 @@ public class Palestra {
 
     public Palestra() {}
 
-    // Construtor atualizado para aceitar todos os campos da AdminActivity
     @Ignore
     public Palestra(String titulo, String palestrante, String email, String telefone,
                     String briefing, String curriculo, int tempo, String horaInicio,
