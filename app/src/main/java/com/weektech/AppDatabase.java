@@ -4,15 +4,20 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import com.weektech.Palestra;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Palestra.class, Inscricao.class}, version = 1, exportSchema = false)
+@Database(
+        entities = {Palestra.class, Inscricao.class, Usuario.class, Projeto.class},
+        version = 2,
+        exportSchema = false
+)
 public abstract class AppDatabase extends RoomDatabase {
-    public abstract PalestraDao palestraDao();
 
+    public abstract PalestraDao palestraDao();
     public abstract InscricaoDao inscricaoDao();
+    public abstract UsuarioDao usuarioDao();
+    public abstract ProjetoDao projetoDao();
 
     private static volatile AppDatabase INSTANCE;
     public static final ExecutorService databaseExecutor = Executors.newFixedThreadPool(4);
@@ -21,8 +26,11 @@ public abstract class AppDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "weektech_db")
+                    INSTANCE = Room.databaseBuilder(
+                                    context.getApplicationContext(),
+                                    AppDatabase.class,
+                                    "weektech_db")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
