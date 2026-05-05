@@ -1,4 +1,3 @@
-
 package com.weektech;
 
 import android.content.Intent;
@@ -7,34 +6,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.weektech.PalestraAdapter;
-import com.weektech.AppDatabase;
-import com.weektech.InscricaoDao;
-import com.weektech.PalestraDao;
-import com.weektech.Palestra;
-
+import com.weektech.util.SessionManager;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PalestrasDiaFragment extends Fragment
         implements PalestraAdapter.OnPalestraClickListener {
 
-    // Chave do argumento
     private static final String ARG_DIA = "dia";
-    private int dia; // 1, 2 ou 3
+    private int dia;
     private RecyclerView    rvPalestras;
     private PalestraAdapter adapter;
     private PalestraDao     palestraDao;
     private InscricaoDao    inscricaoDao;
+    private SessionManager  session;
 
-    // Factory: cria o fragment passando o número do dia
     public static PalestrasDiaFragment newInstance(int dia) {
         PalestrasDiaFragment fragment = new PalestrasDiaFragment();
         Bundle args = new Bundle();
@@ -56,7 +46,6 @@ public class PalestrasDiaFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Infla o fragment_palestras_dia.xml (apenas o RecyclerView)
         return inflater.inflate(R.layout.fragment_palestras_dia, container, false);
     }
 
@@ -64,97 +53,90 @@ public class PalestrasDiaFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Configuração do RecyclerView
+        session = new SessionManager(requireContext());
+
         rvPalestras = view.findViewById(R.id.rvPalestras);
         rvPalestras.setLayoutManager(new LinearLayoutManager(getContext()));
 
         adapter = new PalestraAdapter(getContext(), this);
         rvPalestras.setAdapter(adapter);
 
-        // Acesso ao banco Room
         AppDatabase db = AppDatabase.getInstance(requireContext());
         palestraDao  = db.palestraDao();
         inscricaoDao = db.inscricaoDao();
 
-        // Observa as palestras do dia via LiveData
-        // Sempre que o banco mudar, a UI é atualizada automaticamente
         palestraDao.listarPorDia(dia).observe(getViewLifecycleOwner(), palestras -> {
             if (palestras == null || palestras.isEmpty()) {
                 adapter.setPalestras(new ArrayList<>());
                 return;
             }
 
-            // Para cada palestra, verifica se o usuario está inscrito
             AppDatabase.databaseExecutor.execute(() -> {
-                // RA do usuário logado (substitua pela lógica real de sessão)
-                String raUsuario = obterRaUsuarioLogado();
+                String raUsuario = session.getRa();
 
                 for (Palestra p : palestras) {
-                    boolean inscrito = inscricaoDao
-                            .verificarDuplicata(raUsuario, p.id) > 0;
-
-                    // Define o status visual do botão
+                    boolean inscrito = inscricaoDao.verificarDuplicata(raUsuario, p.id) > 0;
                     if (inscrito) {
                         p.statusInscricao = Palestra.StatusInscricao.INSCRITO;
                     } else if (!p.ativa) {
-                        // Palestra encerrada → só pode visualizar
                         p.statusInscricao = Palestra.StatusInscricao.VISUALIZAR;
                     } else {
                         p.statusInscricao = Palestra.StatusInscricao.DISPONIVEL;
                     }
                 }
 
-                // Atualiza o adapter na main thread
-                requireActivity().runOnUiThread(() ->
-                        adapter.setPalestras(palestras));
+                requireActivity().runOnUiThread(() -> adapter.setPalestras(palestras));
             });
         });
     }
 
-    //@Override
-    //public void onInscreverClick(Palestra palestra, int position) {
-        //Intent intent = new Intent(getContext(), InscricaoActivity.class);
-        //intent.putExtra("PALESTRA_ID",     palestra.id);
-        //intent.putExtra("PALESTRA_TITULO", palestra.titulo);
-        //startActivity(intent);
-    //}
+    @Override
+    public void onInscreverClick(Palestra palestra, int position) {
+        String ra = session.getRa();
+        if (ra.isEmpty()) {
+            Toast.makeText(getContext(), "Faça login para se inscrever.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AppDatabase.databaseExecutor.execute(() -> {
+            if (inscricaoDao.verificarDuplicata(ra, palestra.id) > 0) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), "Você já está inscrito nesta palestra.", Toast.LENGTH_SHORT).show());
+                return;
+            }
+
+            Inscricao inscricao = new Inscricao(ra, palestra.id);
+            long id = inscricaoDao.inserir(inscricao);
+
+            requireActivity().runOnUiThread(() -> {
+                if (id > 0) {
+                    adapter.atualizarStatus(position, Palestra.StatusInscricao.INSCRITO);
+                    Toast.makeText(getContext(), "Inscrição realizada com sucesso! ✓", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Erro ao realizar inscrição.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+    }
 
     @Override
     public void onInscritoClick(Palestra palestra, int position) {
-        Toast.makeText(getContext(),
-                "Você já está inscrito em: " + palestra.titulo,
-                Toast.LENGTH_SHORT).show();
-        // Opcional: exibir AlertDialog para cancelar inscrição
+        Toast.makeText(getContext(), "Você já está inscrito em: " + palestra.titulo, Toast.LENGTH_SHORT).show();
     }
 
-    // usuario clicou em "Visualizar" → abre detalhes (somente leitura)
     @Override
     public void onVisualizarClick(Palestra palestra, int position) {
-        //Intent intent = new Intent(getContext(), PalestraDetailActivity.class);
-        //intent.putExtra("PALESTRA_ID", palestra.id);
-        //startActivity(intent);
+        Intent intent = new Intent(getContext(), CheckInActivity.class);
+        intent.putExtra("PALESTRA_ID",     palestra.id);
+        intent.putExtra("PALESTRA_TITULO", palestra.titulo);
+        startActivity(intent);
     }
 
-    // usuario clicou no card → abre detalhes
     @Override
     public void onCardClick(Palestra palestra, int position) {
-        //Intent intent = new Intent(getContext(), PalestraDetailActivity.class);
-        //intent.putExtra("PALESTRA_ID", palestra.id);
-        //startActivity(intent);
-    }
-
-    @Override
-    public void onInscreverClick(Palestra palestra, int position) {
-        // Aqui você coloca a lógica do que acontece quando o usuário clica no botão
-        // Exemplo: Abrir a tela de inscrição ou processar o clique
-        //Intent intent = new Intent(getContext(), InscricaoActivity.class);
-        //intent.putExtra("palestra_id", palestra.id);
-        //startActivity(intent);
-    }
-
-    private String obterRaUsuarioLogado() {
-        return requireContext()
-                .getSharedPreferences("techweek_prefs", 0)
-                .getString("ra_usuario", "");
+        Intent intent = new Intent(getContext(), CheckInActivity.class);
+        intent.putExtra("PALESTRA_ID",     palestra.id);
+        intent.putExtra("PALESTRA_TITULO", palestra.titulo);
+        startActivity(intent);
     }
 }
