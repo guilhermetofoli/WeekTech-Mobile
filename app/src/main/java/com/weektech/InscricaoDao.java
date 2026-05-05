@@ -7,11 +7,16 @@ import java.util.List;
 
 @Dao
 public interface InscricaoDao {
-    // Aqui você pode criar uma classe de modelo 'Inscricao' depois se precisar
-    // Por enquanto, vamos deixar a estrutura pronta para o banco reconhecer
+
+    @Insert
+    long inserir(Inscricao inscricao);
+
     @Query("SELECT * FROM palestras WHERE ativa = 1")
     List<com.weektech.Palestra> listarInscricoesAtivas();
 
     @Query("SELECT COUNT(*) FROM inscricoes WHERE raUsuario = :ra AND palestraId = :palestraId")
     int verificarDuplicata(String ra, int palestraId);
+
+    @Query("SELECT * FROM inscricoes WHERE raUsuario = :ra")
+    List<Inscricao> listarInscricoesPorUsuario(String ra);
 }
