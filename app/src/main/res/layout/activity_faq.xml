@@ -1,44 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey_background"
+    android:background="#F5F5F5"
     android:orientation="vertical">
 
+    <!-- Header Azul -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blue_primary"
+        android:background="#1B3A6B"
+        android:orientation="vertical"
         android:paddingTop="40dp"
         android:paddingBottom="16dp"
-        android:paddingHorizontal="20dp"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:paddingHorizontal="20dp">
+
+        <!-- Linha do Título e Botão Voltar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Perguntas Frequentes"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnVoltar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Voltar"
+                android:textAllCaps="false"
+                android:background="?attr/selectableItemBackground"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"/>
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Perguntas Frequentes"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Toque para expandir cada resposta"
+            android:text="Tire suas dúvidas sobre o evento"
             android:textColor="#B0BED4"
             android:textSize="12sp"
             android:layout_marginTop="4dp"/>
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvFaq"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="12dp"
-        android:paddingBottom="16dp"
-        android:paddingHorizontal="14dp" />
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Como realizar o check-in no evento?"
+                        android:textColor="#1B3A6B"
+                        android:textStyle="bold"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Basta apresentar o seu QR Code gerado no portal na entrada do auditório principal."
+                        android:textColor="#666666"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Haverá emissão de certificados?"
+                        android:textColor="#1B3A6B"
+                        android:textStyle="bold"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Sim, os certificados serão enviados para o e-mail cadastrado em até 7 dias úteis após o término da Tech Week."
+                        android:textColor="#666666"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>
