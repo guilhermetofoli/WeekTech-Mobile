@@ -11,72 +11,72 @@
     app:cardElevation="3dp">
 
 
-<LinearLayout
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:orientation="vertical"
-android:padding="16dp">
-
-
-<TextView
-    android:id="@+id/tvTitulo"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Titulo"
-    android:textSize="16sp"
-    android:textStyle="bold"
-    android:textColor="#1E1E2E"/>
-
-
-<TextView
-    android:id="@+id/tvPalestrante"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Palestrante"
-    android:textSize="13sp"
-    android:textColor="#6C757D"
-    android:layout_marginTop="4dp"/>
-
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_marginTop="10dp">
-
-
-    <TextView
-        android:id="@+id/tvHorario"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-    android:text="00:00"
-    android:textSize="12sp"
-    android:textColor="#1A73E8"
-    android:textStyle="bold"/>
-
-    <!-- Local da palestra -->
-    <TextView
-        android:id="@+id/tvLocal"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-    android:text="Local"
-    android:textSize="12sp"
-    android:textColor="#6C757D"
-    android:gravity="end"/>
-</LinearLayout>
+        android:orientation="vertical"
+        android:padding="16dp">
 
 
-<Button
-    android:id="@+id/btnInscrever"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="12dp"
-    android:text="Inscrever-se"
-    android:textColor="#FFFFFF"
-    android:backgroundTint="#1A73E8"
-    android:textSize="13sp"/>
+        <TextView
+            android:id="@+id/tvTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Titulo"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#1E1E2E"/>
 
-</LinearLayout>
-    </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tvPalestrante"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Palestrante"
+            android:textSize="13sp"
+            android:textColor="#6C757D"
+            android:layout_marginTop="4dp"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+
+            <TextView
+                android:id="@+id/tvHorario"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="00:00"
+                android:textSize="12sp"
+                android:textColor="#1A73E8"
+                android:textStyle="bold"/>
+
+            <!-- Local da palestra -->
+            <TextView
+                android:id="@+id/tvLocal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Local"
+                android:textSize="12sp"
+                android:textColor="#6C757D"
+                android:gravity="end"/>
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/btnInscrever"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Inscrever-se"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#1A73E8"
+            android:textSize="13sp"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
