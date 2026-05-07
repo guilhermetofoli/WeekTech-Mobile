@@ -1,6 +1,7 @@
 package com.weektech;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,12 +26,13 @@ public class ListaAlunosActivity extends AppCompatActivity {
         db = AppDatabase.getInstance(this);
         rvAlunos = findViewById(R.id.rvAlunos);
         tabLayout = findViewById(R.id.tabLayoutAlunos);
+        ImageButton btnVoltar = findViewById(R.id.btnVoltarAlunos);
 
         rvAlunos.setLayoutManager(new LinearLayoutManager(this));
         adapter = new UsuarioAdapter();
         rvAlunos.setAdapter(adapter);
 
-        findViewById(R.id.toolbarAlunos).setOnClickListener(v -> finish());
+        btnVoltar.setOnClickListener(v -> finish());
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
