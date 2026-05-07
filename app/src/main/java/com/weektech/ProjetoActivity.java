@@ -2,8 +2,9 @@ package com.weektech;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -15,71 +16,71 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.weektech.util.SessionManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ProjetoActivity extends AppCompatActivity {
 
     private TextInputEditText etNomeProjeto, etDescricao;
     private Button btnSalvarProjeto;
-    private RecyclerView rvProjetos;
     private ProjetoAdapter projetoAdapter;
+    private ProjetoAdapterAdmin adminAdapter;
     private ProjetoDao projetoDao;
     private SessionManager session;
-    private BottomNavigationView bottomNav; // Novo componente
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projeto);
 
-        // Inicializações
         session = new SessionManager(this);
         projetoDao = AppDatabase.getInstance(this).projetoDao();
 
-        // Referências da UI
         etNomeProjeto = findViewById(R.id.etNomeProjeto);
         etDescricao = findViewById(R.id.etDescricaoProjeto);
         btnSalvarProjeto = findViewById(R.id.btnSalvarProjeto);
-        rvProjetos = findViewById(R.id.rvProjetos);
-        bottomNav = findViewById(R.id.bottomNav); // Referência do rodapé
+        RecyclerView rvProjetos = findViewById(R.id.rvProjetos);
+        bottomNav = findViewById(R.id.bottomNav);
+        LinearLayout layoutCadastro = findViewById(R.id.layoutCadastroProjeto);
 
-        // Configuração do RecyclerView
         rvProjetos.setLayoutManager(new LinearLayoutManager(this));
-        projetoAdapter = new ProjetoAdapter();
-        rvProjetos.setAdapter(projetoAdapter);
 
-        // Configuração do Rodapé (Navegação)
+        if (session.isAdmin()) {
+            if (layoutCadastro != null) layoutCadastro.setVisibility(View.GONE);
+            adminAdapter = new ProjetoAdapterAdmin(null, projetoDao);
+            rvProjetos.setAdapter(adminAdapter);
+        } else {
+            if (layoutCadastro != null) layoutCadastro.setVisibility(View.VISIBLE);
+            projetoAdapter = new ProjetoAdapter();
+            rvProjetos.setAdapter(projetoAdapter);
+        }
+
         configurarNavegacao();
-
         carregarProjetos();
 
         btnSalvarProjeto.setOnClickListener(v -> salvarProjeto());
     }
 
     private void configurarNavegacao() {
-        // Marca o ícone de Projetos como selecionado
         bottomNav.setSelectedItemId(R.id.nav_projetos);
-
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_schedule) {
                 startActivity(new Intent(this, HomeActivity.class));
-                overridePendingTransition(0, 0);
                 finish();
                 return true;
             } else if (id == R.id.nav_projetos) {
-                // Já está aqui
                 return true;
             } else if (id == R.id.nav_perfil) {
                 startActivity(new Intent(this, PerfilActivity.class));
-                overridePendingTransition(0, 0);
                 finish();
                 return true;
             } else if (id == R.id.nav_admin) {
                 if (session.isAdmin()) {
                     startActivity(new Intent(this, AdminActivity.class));
-                    overridePendingTransition(0, 0);
                     finish();
                 } else {
                     new AlertDialog.Builder(this)
@@ -87,13 +88,16 @@ public class ProjetoActivity extends AppCompatActivity {
                             .setMessage("Área exclusiva para administradores.")
                             .setPositiveButton("OK", null)
                             .show();
-                    // Força a volta visual para o ícone de projetos
                     bottomNav.postDelayed(() -> bottomNav.setSelectedItemId(R.id.nav_projetos), 100);
                 }
                 return true;
             }
             return false;
         });
+        
+        if (!session.isAdmin()) {
+            bottomNav.getMenu().findItem(R.id.nav_admin).setVisible(false);
+        }
     }
 
     private void salvarProjeto() {
@@ -103,17 +107,11 @@ public class ProjetoActivity extends AppCompatActivity {
         String nome = session.getNome();
 
         if (nomeProjeto.isEmpty() || descricao.isEmpty()) {
-            Toast.makeText(this, "Preencha o nome e descrição do projeto!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (ra == null || ra.isEmpty()) {
-            Toast.makeText(this, "Você precisa estar logado para cadastrar um projeto.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Preencha o nome e descrição!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         btnSalvarProjeto.setEnabled(false);
-
         AppDatabase.databaseExecutor.execute(() -> {
             if (projetoDao.verificarProjetoExistente(ra) > 0) {
                 runOnUiThread(() -> {
@@ -124,6 +122,11 @@ public class ProjetoActivity extends AppCompatActivity {
             }
 
             Projeto projeto = new Projeto(nome, ra, nomeProjeto, descricao);
+            
+            // Adicionando data e hora de criação
+            projeto.dataCriacao = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+            projeto.horaCriacao = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+
             long id = projetoDao.inserir(projeto);
 
             runOnUiThread(() -> {
@@ -133,8 +136,6 @@ public class ProjetoActivity extends AppCompatActivity {
                     etNomeProjeto.setText("");
                     etDescricao.setText("");
                     carregarProjetos();
-                } else {
-                    Toast.makeText(this, "Erro ao salvar projeto.", Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -142,8 +143,14 @@ public class ProjetoActivity extends AppCompatActivity {
 
     private void carregarProjetos() {
         AppDatabase.databaseExecutor.execute(() -> {
-            List<Projeto> lista = projetoDao.listarTodos();
-            runOnUiThread(() -> projetoAdapter.setProjetos(lista));
+            List<Projeto> lista;
+            if (session.isAdmin()) {
+                lista = projetoDao.listarTodos();
+                runOnUiThread(() -> adminAdapter.setProjetos(lista));
+            } else {
+                lista = projetoDao.listarAgendados();
+                runOnUiThread(() -> projetoAdapter.setProjetos(lista));
+            }
         });
     }
 
