@@ -2,6 +2,7 @@ package com.weektech;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +35,13 @@ public class HomeActivity extends AppCompatActivity {
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
                 tab.setText("Dia " + (position + 1))).attach();
+
+        // Esconder Admin para Alunos
+        if (!session.isAdmin()) {
+            Menu menu = bottomNav.getMenu();
+            MenuItem adminItem = menu.findItem(R.id.nav_admin);
+            if (adminItem != null) adminItem.setVisible(false);
+        }
 
         // Bottom Navigation
         bottomNav.setOnItemSelectedListener(item -> {
