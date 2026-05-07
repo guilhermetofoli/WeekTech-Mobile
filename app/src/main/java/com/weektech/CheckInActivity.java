@@ -6,6 +6,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.weektech.util.SessionManager;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class CheckInActivity extends AppCompatActivity {
 
@@ -45,21 +48,21 @@ public class CheckInActivity extends AppCompatActivity {
         }
 
         btnConfirmarCheckin.setEnabled(false);
-        tvStatusLocalizacao.setText("Verificando...");
+        tvStatusLocalizacao.setText("Confirmando...");
 
         AppDatabase.databaseExecutor.execute(() -> {
             InscricaoDao dao = AppDatabase.getInstance(this).inscricaoDao();
-
-            // Verifica se já está inscrito antes de confirmar
-            boolean jaInscrito = dao.verificarDuplicata(ra, palestraId) > 0;
+            
+            String dataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+            int rows = dao.confirmarPresenca(ra, palestraId, dataHora);
 
             runOnUiThread(() -> {
                 btnConfirmarCheckin.setEnabled(true);
-                if (jaInscrito) {
+                if (rows > 0) {
                     tvStatusLocalizacao.setText("✓ Presença confirmada com sucesso!\nRA: " + ra);
                     Toast.makeText(this, "Presença confirmada!", Toast.LENGTH_LONG).show();
                 } else {
-                    tvStatusLocalizacao.setText("Você não está inscrito nesta palestra.\nInscreva-se primeiro na tela principal.");
+                    tvStatusLocalizacao.setText("Erro: Você deve se inscrever na palestra antes de confirmar presença.");
                     Toast.makeText(this, "Inscrição não encontrada.", Toast.LENGTH_SHORT).show();
                 }
             });
