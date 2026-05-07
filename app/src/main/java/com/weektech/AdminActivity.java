@@ -1,53 +1,58 @@
 package com.weektech;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
-import com.weektech.AppDatabase;
-import com.weektech.Palestra;
+import com.weektech.util.SessionManager;
 
 public class AdminActivity extends AppCompatActivity
         implements AdminPalestraAdapter.OnAdminActionListener {
 
-    // Cadastro de nova palestra
-    private TextInputEditText etTitulo, etPalestrante, etEmail, etTelefone,
-            etBriefing, etCurriculo, etHoraInicio, etHoraFim,
+    private TextInputEditText etTitulo, etPalestrante, etHoraInicio, etHoraFim,
             etLocal, etDescricao;
     private Spinner   spinnerDia, spinnerTempo;
     private Button    btnSalvarPalestra;
     private RecyclerView rvAdminPalestras;
     private AdminPalestraAdapter adminAdapter;
     private PalestraDao palestraDao;
+    private Palestra palestraSendoEditada = null;
+    private BottomNavigationView bottomNav;
+    private SessionManager session;
+    private TextView tvFormTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
+        session = new SessionManager(this);
         palestraDao = AppDatabase.getInstance(this).palestraDao();
 
-        etTitulo     = findViewById(R.id.etAdminTitulo);
-        etPalestrante= findViewById(R.id.etAdminPalestrante);
-        etEmail      = findViewById(R.id.etAdminEmail);
-        etTelefone   = findViewById(R.id.etAdminTelefone);
-        etBriefing   = findViewById(R.id.etAdminBriefing);
-        etCurriculo  = findViewById(R.id.etAdminCurriculo);
-        etHoraInicio = findViewById(R.id.etAdminHoraInicio);
-        etHoraFim    = findViewById(R.id.etAdminHoraFim);
-        etLocal      = findViewById(R.id.etAdminLocal);
-        etDescricao  = findViewById(R.id.etAdminDescricao);
-        spinnerDia   = findViewById(R.id.spinnerDia);
-        spinnerTempo = findViewById(R.id.spinnerTempo);
+        etTitulo      = findViewById(R.id.etAdminTitulo);
+        etPalestrante = findViewById(R.id.etAdminPalestrante);
+        etHoraInicio  = findViewById(R.id.etAdminHoraInicio);
+        etHoraFim     = findViewById(R.id.etAdminHoraFim);
+        etLocal       = findViewById(R.id.etAdminLocal);
+        etDescricao   = findViewById(R.id.etAdminDescricao);
+        spinnerDia    = findViewById(R.id.spinnerDia);
+        spinnerTempo  = findViewById(R.id.spinnerTempo);
         btnSalvarPalestra = findViewById(R.id.btnSalvarPalestra);
         rvAdminPalestras  = findViewById(R.id.rvAdminPalestras);
+        bottomNav     = findViewById(R.id.bottomNav);
+        tvFormTitle   = findViewById(R.id.tvAdminFormTitle);
 
         // Spinner Dia
         ArrayAdapter<String> adapterDia = new ArrayAdapter<>(this,
@@ -56,7 +61,7 @@ public class AdminActivity extends AppCompatActivity
         adapterDia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDia.setAdapter(adapterDia);
 
-        // Spinner Tempo (40 a 60 min)
+        // Spinner Tempo
         String[] tempos = new String[21];
         for (int i = 0; i <= 20; i++) tempos[i] = (40 + i) + " minutos";
         ArrayAdapter<String> adapterTempo = new ArrayAdapter<>(this,
@@ -64,7 +69,6 @@ public class AdminActivity extends AppCompatActivity
         adapterTempo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTempo.setAdapter(adapterTempo);
 
-        // RecyclerView de palestras cadastradas
         rvAdminPalestras.setLayoutManager(new LinearLayoutManager(this));
         adminAdapter = new AdminPalestraAdapter(this);
         rvAdminPalestras.setAdapter(adminAdapter);
@@ -74,17 +78,39 @@ public class AdminActivity extends AppCompatActivity
 
         btnSalvarPalestra.setOnClickListener(v -> salvarPalestra());
 
-        Button btnVoltar = findViewById(R.id.btnAdminVoltar);
-        btnVoltar.setOnClickListener(v -> finish());
+        findViewById(R.id.btnGerenciarAlunos).setOnClickListener(v -> {
+            startActivity(new Intent(this, ListaAlunosActivity.class));
+        });
+
+        configurarNavegacao();
+    }
+
+    private void configurarNavegacao() {
+        bottomNav.setSelectedItemId(R.id.nav_admin);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_schedule) {
+                startActivity(new Intent(this, HomeActivity.class));
+                finish();
+                return true;
+            } else if (id == R.id.nav_projetos) {
+                startActivity(new Intent(this, ProjetoActivity.class));
+                finish();
+                return true;
+            } else if (id == R.id.nav_perfil) {
+                startActivity(new Intent(this, PerfilActivity.class));
+                finish();
+                return true;
+            } else if (id == R.id.nav_admin) {
+                return true;
+            }
+            return false;
+        });
     }
 
     private void salvarPalestra() {
         String titulo     = getText(etTitulo);
         String palestrante= getText(etPalestrante);
-        String email      = getText(etEmail);
-        String telefone   = getText(etTelefone);
-        String briefing   = getText(etBriefing);
-        String curriculo  = getText(etCurriculo);
         String horaInicio = getText(etHoraInicio);
         String horaFim    = getText(etHoraFim);
         String local      = getText(etLocal);
@@ -93,52 +119,83 @@ public class AdminActivity extends AppCompatActivity
         int    tempo      = 40 + spinnerTempo.getSelectedItemPosition();
 
         if (titulo.isEmpty() || palestrante.isEmpty() || horaInicio.isEmpty() || horaFim.isEmpty()) {
-            Toast.makeText(this, "Título, palestrante e horários são obrigatórios!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Preencha os campos obrigatórios!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         btnSalvarPalestra.setEnabled(false);
 
-        Palestra p = new Palestra(titulo, palestrante, email, telefone,
-                briefing, curriculo, tempo, horaInicio, horaFim,
-                local, descricao, dia, true);
+        Palestra p = (palestraSendoEditada != null) ? palestraSendoEditada : new Palestra();
+        p.titulo = titulo;
+        p.palestrante = palestrante;
+        p.tempo = tempo;
+        p.horaInicio = horaInicio;
+        p.horaFim = horaFim;
+        p.local = local;
+        p.descricao = descricao;
+        p.dia = dia;
+        p.ativa = true;
 
         AppDatabase.databaseExecutor.execute(() -> {
-            long id = palestraDao.inserir(p);
+            if (palestraSendoEditada == null) {
+                palestraDao.inserir(p);
+            } else {
+                palestraDao.update(p);
+            }
             runOnUiThread(() -> {
                 btnSalvarPalestra.setEnabled(true);
-                if (id > 0) {
-                    Toast.makeText(this, "Palestra cadastrada com sucesso!", Toast.LENGTH_SHORT).show();
-                    limparCampos();
-                } else {
-                    Toast.makeText(this, "Erro ao salvar.", Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(this, "Palestra salva com sucesso!", Toast.LENGTH_SHORT).show();
+                limparCampos();
+                palestraSendoEditada = null;
+                btnSalvarPalestra.setText("SALVAR PALESTRA");
+                tvFormTitle.setText("CADASTRAR NOVA PALESTRA");
             });
         });
+    }
+
+    @Override
+    public void onEditPalestra(Palestra palestra) {
+        palestraSendoEditada = palestra;
+        etTitulo.setText(palestra.titulo);
+        etPalestrante.setText(palestra.palestrante);
+        etHoraInicio.setText(palestra.horaInicio);
+        etHoraFim.setText(palestra.horaFim);
+        etLocal.setText(palestra.local);
+        etDescricao.setText(palestra.descricao);
+        spinnerDia.setSelection(palestra.dia - 1);
+        spinnerTempo.setSelection(Math.max(0, palestra.tempo - 40));
+        
+        btnSalvarPalestra.setText("ATUALIZAR PALESTRA");
+        tvFormTitle.setText("EDITAR PALESTRA");
+        
+        // Scroll suave para o topo
+        findViewById(R.id.tvAdminFormTitle).getParent().getParent().requestLayout();
+        ((View)findViewById(R.id.tvAdminFormTitle).getParent().getParent()).scrollTo(0, 0);
     }
 
     @Override
     public void onToggleAtiva(Palestra palestra) {
         AppDatabase.databaseExecutor.execute(() -> {
             palestraDao.atualizarStatus(palestra.id, !palestra.ativa);
-            runOnUiThread(() -> Toast.makeText(this,
-                    palestra.ativa ? "Palestra desativada." : "Palestra ativada.",
-                    Toast.LENGTH_SHORT).show());
         });
     }
 
     @Override
     public void onDeletePalestra(Palestra palestra) {
-        AppDatabase.databaseExecutor.execute(() -> {
-            palestraDao.deletar(palestra);
-            runOnUiThread(() -> Toast.makeText(this,
-                    "Palestra removida.", Toast.LENGTH_SHORT).show());
-        });
+        new AlertDialog.Builder(this)
+                .setTitle("Excluir Palestra")
+                .setMessage("Deseja realmente excluir esta palestra?")
+                .setPositiveButton("Sim", (dialog, which) -> {
+                    AppDatabase.databaseExecutor.execute(() -> {
+                        palestraDao.deletar(palestra);
+                    });
+                })
+                .setNegativeButton("Não", null)
+                .show();
     }
 
     private void limparCampos() {
-        etTitulo.setText(""); etPalestrante.setText(""); etEmail.setText("");
-        etTelefone.setText(""); etBriefing.setText(""); etCurriculo.setText("");
+        etTitulo.setText(""); etPalestrante.setText("");
         etHoraInicio.setText(""); etHoraFim.setText(""); etLocal.setText("");
         etDescricao.setText("");
     }
@@ -147,4 +204,3 @@ public class AdminActivity extends AppCompatActivity
         return et.getText() != null ? et.getText().toString().trim() : "";
     }
 }
-
