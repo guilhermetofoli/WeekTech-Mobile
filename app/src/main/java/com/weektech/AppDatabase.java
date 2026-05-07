@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 
 @Database(
         entities = {Palestra.class, Inscricao.class, Usuario.class, Projeto.class},
-        version = 2,
+        version = 15,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
