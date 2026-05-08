@@ -59,6 +59,7 @@ public class PalestrasDiaFragment extends Fragment
         rvPalestras.setLayoutManager(new LinearLayoutManager(getContext()));
 
         adapter = new PalestraAdapter(getContext(), this);
+        adapter.setAdmin(session.isAdmin());
         rvPalestras.setAdapter(adapter);
 
         AppDatabase db = AppDatabase.getInstance(requireContext());
@@ -121,15 +122,12 @@ public class PalestrasDiaFragment extends Fragment
 
     @Override
     public void onInscritoClick(Palestra palestra, int position) {
-        Toast.makeText(getContext(), "Você já está inscrito em: " + palestra.titulo, Toast.LENGTH_SHORT).show();
+        onCardClick(palestra, position);
     }
 
     @Override
     public void onVisualizarClick(Palestra palestra, int position) {
-        Intent intent = new Intent(getContext(), CheckInActivity.class);
-        intent.putExtra("PALESTRA_ID",     palestra.id);
-        intent.putExtra("PALESTRA_TITULO", palestra.titulo);
-        startActivity(intent);
+        onCardClick(palestra, position);
     }
 
     @Override
@@ -137,6 +135,13 @@ public class PalestrasDiaFragment extends Fragment
         Intent intent = new Intent(getContext(), CheckInActivity.class);
         intent.putExtra("PALESTRA_ID",     palestra.id);
         intent.putExtra("PALESTRA_TITULO", palestra.titulo);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onVisualizarPresencasClick(Palestra palestra) {
+        Intent intent = new Intent(getContext(), PresencasActivity.class);
+        intent.putExtra("palestra_id", palestra.id);
         startActivity(intent);
     }
 }
