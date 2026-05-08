@@ -9,13 +9,32 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarAlunos"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#1B3A6B"
-            app:title="Lista de Alunos"
-            app:titleTextColor="#FFFFFF"/>
+            android:background="#1B3A6B">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:text="Lista de Alunos"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnVoltarAlunos"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_close"
+                app:tint="#FFFFFF" />
+        </RelativeLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.tabs.TabLayout
@@ -24,22 +43,24 @@
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
         app:tabIndicatorColor="#1B3A6B"
-        app:tabSelectedTextColor="#1B3A6B">
+        app:tabSelectedTextColor="#1B3A6B"
+        app:tabTextColor="#6B7C93"
+        app:tabIndicatorHeight="3dp">
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Todos" />
+            android:text="TODOS" />
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Coffee Break" />
+            android:text="COFFEE BREAK ☕" />
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAlunos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
+        android:padding="12dp"
         android:clipToPadding="false"/>
 
 </LinearLayout>

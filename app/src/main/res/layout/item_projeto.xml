@@ -4,9 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="3dp">
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="3dp"
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,32 +15,84 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvNomeProjeto"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nome do Projeto"
-            android:textColor="#1B3A6B"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp"/>
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvNomeProjeto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/tvDataCriacao"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Nome do Projeto"
+                android:textColor="#1B3A6B"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDataCriacao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="00/00/0000"
+                android:textColor="#6B7C93"
+                android:textSize="11sp" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tvNomeAluno"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Aluno · RA"
-            android:textColor="#666666"
+            android:textColor="#6B7C93"
             android:textSize="12sp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="12dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E1E4E8"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
             android:id="@+id/tvDescricaoProjeto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Descrição"
+            android:text="Descrição do projeto..."
             android:textColor="#444444"
-            android:textSize="14sp"/>
+            android:textSize="13sp"
+            android:lineSpacingExtra="2dp"
+            android:layout_marginBottom="12dp"/>
+
+        <LinearLayout
+            android:id="@+id/layoutAgendamento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#F0F7FF"
+            android:padding="8dp"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_schedule"
+                app:tint="#1B3A6B"
+                android:layout_marginEnd="6dp"/>
+
+            <TextView
+                android:id="@+id/tvAgendamentoInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apresentação: 00/00 às 00:00"
+                android:textColor="#1B3A6B"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
