@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -21,7 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -58,7 +56,6 @@
                     android:textColor="#1B3A6B"
                     android:textSize="17sp"
                     android:textStyle="bold" />
-
             </LinearLayout>
 
             <View
@@ -79,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_bold"
                     android:maxLines="2"
-                    android:text="Palestra Magna: IA e o Futuro do Trabalho"
+                    android:text="Título da Palestra"
                     android:textColor="#1B3A6B"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -89,7 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Palestrante: Dr. Carlos Silva, MIT"
+                    android:text="Palestrante: Nome"
                     android:textColor="#6B7C93"
                     android:textSize="12sp" />
 
@@ -99,7 +96,6 @@
                     android:layout_marginTop="3dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
-
 
                     <ImageView
                         android:layout_width="13dp"
@@ -114,11 +110,20 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Sala 101 - Presencial / Link Online"
+                        android:text="Local"
                         android:textColor="#6B7C93"
                         android:textSize="12sp" />
-
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvDescricao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Descrição detalhada aqui..."
+                    android:textColor="#444444"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
 
             </LinearLayout>
         </LinearLayout>
@@ -134,8 +139,7 @@
             android:text="Inscrever-se"
             android:textAllCaps="false"
             android:textSize="14sp"
-            android:textStyle="bold"
-            style="@style/BtnInscricaoDisponivel" />
+            android:textStyle="bold" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
