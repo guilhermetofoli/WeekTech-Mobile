@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 import com.weektech.Palestra;
 import java.util.List;
 
@@ -12,6 +13,12 @@ import java.util.List;
 public interface PalestraDao {
     @Insert
     long inserir(Palestra palestra);
+
+    @Update
+    void update(Palestra palestra);
+
+    @Delete
+    void delete(Palestra palestra);
 
     @Query("SELECT * FROM palestras ORDER BY id DESC")
     LiveData<List<Palestra>> listarTodas();
