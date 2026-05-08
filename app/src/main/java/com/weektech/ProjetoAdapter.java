@@ -32,18 +32,37 @@ public class ProjetoAdapter extends RecyclerView.Adapter<ProjetoAdapter.VH> {
         holder.tvNomeProjeto.setText(p.nomeProjeto);
         holder.tvNome.setText(p.nome + "  ·  RA: " + p.ra);
         holder.tvDescricao.setText(p.descricao);
+        
+        if (p.dataCriacao != null) {
+            holder.tvDataCriacao.setText(p.dataCriacao);
+            holder.tvDataCriacao.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvDataCriacao.setVisibility(View.GONE);
+        }
+
+        if (p.dataApresentacao != null && !p.dataApresentacao.isEmpty()) {
+            holder.layoutAgendamento.setVisibility(View.VISIBLE);
+            holder.tvAgendamentoInfo.setText("Apresentação: " + p.dataApresentacao + " às " + p.horaApresentacao);
+        } else {
+            holder.layoutAgendamento.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public int getItemCount() { return projetos.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvNomeProjeto, tvNome, tvDescricao;
+        TextView tvNomeProjeto, tvNome, tvDescricao, tvDataCriacao, tvAgendamentoInfo;
+        View layoutAgendamento;
+        
         VH(@NonNull View v) {
             super(v);
             tvNomeProjeto = v.findViewById(R.id.tvNomeProjeto);
             tvNome        = v.findViewById(R.id.tvNomeAluno);
             tvDescricao   = v.findViewById(R.id.tvDescricaoProjeto);
+            tvDataCriacao = v.findViewById(R.id.tvDataCriacao);
+            tvAgendamentoInfo = v.findViewById(R.id.tvAgendamentoInfo);
+            layoutAgendamento = v.findViewById(R.id.layoutAgendamento);
         }
     }
 }
