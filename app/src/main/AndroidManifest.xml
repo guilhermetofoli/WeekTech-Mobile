@@ -29,6 +29,8 @@
         <activity android:name=".FaqActivity"      android:exported="false"/>
         <activity android:name=".PerfilActivity"   android:exported="false"/>
         <activity android:name=".ProjetoActivity"  android:exported="false"/>
+        <activity android:name=".PresencasActivity" android:exported="false"/>
+        <activity android:name=".ListaAlunosActivity" android:exported="false"/>
 
         <meta-data
             android:name="preloaded_fonts"
