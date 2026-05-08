@@ -22,26 +22,35 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.VH> {
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_palestra, parent, false); // Reutilizando layout simples que tem 2 textviews
+                .inflate(R.layout.item_usuario, parent, false);
         return new VH(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         Usuario u = usuarios.get(position);
-        holder.tvNome.setText(u.nome + (u.coffeeBreak ? " ☕" : ""));
-        holder.tvRA.setText("RA: " + u.ra + " | " + u.curso);
+        holder.tvNome.setText(u.nome);
+        holder.tvRA.setText("RA: " + u.ra);
+        holder.tvCurso.setText(u.curso + " - " + u.serie);
+        
+        if (u.coffeeBreak) {
+            holder.tvTagCoffee.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvTagCoffee.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public int getItemCount() { return usuarios.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvNome, tvRA;
+        TextView tvNome, tvRA, tvCurso, tvTagCoffee;
         VH(@NonNull View v) {
             super(v);
-            tvNome = v.findViewById(R.id.txtNomeAluno);
-            tvRA   = v.findViewById(R.id.txtDataConfirmacao);
+            tvNome = v.findViewById(R.id.tvNomeUsuario);
+            tvRA   = v.findViewById(R.id.tvRaUsuario);
+            tvCurso = v.findViewById(R.id.tvCursoUsuario);
+            tvTagCoffee = v.findViewById(R.id.tvTagCoffee);
         }
     }
 }
