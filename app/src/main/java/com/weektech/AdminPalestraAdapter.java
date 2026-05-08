@@ -1,24 +1,27 @@
 package com.weektech;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
+
 import androidx.recyclerview.widget.RecyclerView;
-import com.weektech.Palestra;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdapter.AdminViewHolder> {
+public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdapter.ViewHolder> {
 
     private List<Palestra> palestras = new ArrayList<>();
-    private final OnAdminActionListener listener;
+    private Context context;
+    private OnAdminActionListener listener;
 
     public interface OnAdminActionListener {
         void onToggleAtiva(Palestra palestra);
         void onDeletePalestra(Palestra palestra);
+        void onEditPalestra(Palestra palestra);
     }
 
     public AdminPalestraAdapter(OnAdminActionListener listener) {
@@ -30,38 +33,47 @@ public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdap
         notifyDataSetChanged();
     }
 
-    @NonNull
     @Override
-    public AdminViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_admin_palestra, parent, false);
-        return new AdminViewHolder(view);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (context == null) {
+            context = parent.getContext();
+        }
+        View view = LayoutInflater.from(context)
+                .inflate(R.layout.item_admin_palestra, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdminViewHolder holder, int position) {
-        Palestra p = palestras.get(position);
-        holder.tvTitulo.setText(p.titulo);
-        holder.btnToggle.setImageResource(p.ativa ?
-                android.R.drawable.ic_menu_view :
-                android.R.drawable.ic_menu_close_clear_cancel);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Palestra palestra = palestras.get(position);
 
-        holder.btnDelete.setImageResource(android.R.drawable.ic_menu_delete);
+        holder.titulo.setText(palestra.titulo);
+        holder.palestrante.setText(palestra.palestrante);
+
+        holder.btnEditar.setOnClickListener(v -> {
+            if (listener != null) listener.onEditPalestra(palestra);
+        });
+
+        holder.btnExcluir.setOnClickListener(v -> {
+            if (listener != null) listener.onDeletePalestra(palestra);
+        });
     }
 
     @Override
     public int getItemCount() {
-        return palestras.size();
+        return palestras != null ? palestras.size() : 0;
     }
 
-    static class AdminViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitulo;
-        ImageButton btnToggle, btnDelete;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView titulo, palestrante;
+        ImageButton btnEditar, btnExcluir;
 
-        public AdminViewHolder(@NonNull View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
-            tvTitulo = itemView.findViewById(R.id.tvAdminItemTitulo);
-            btnToggle = itemView.findViewById(R.id.btnAdminToggle);
-            btnDelete = itemView.findViewById(R.id.btnAdminDelete);
+            titulo = itemView.findViewById(R.id.txtTituloPalestra);
+            palestrante = itemView.findViewById(R.id.txtPalestrante);
+            btnEditar = itemView.findViewById(R.id.btnEditarPalestra);
+            btnExcluir = itemView.findViewById(R.id.btnExcluirPalestra);
         }
     }
 }
