@@ -4,6 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.Index;
 
+// tabela de usuarios do banco
 @Entity(tableName = "usuarios", indices = {@Index(value = "email", unique = true), @Index(value = "ra", unique = true)})
 public class Usuario {
 
@@ -16,11 +17,12 @@ public class Usuario {
     public String curso;
     public String serie;
     public String senha;
-    public boolean isAdmin;
-    public boolean coffeeBreak;
+    public boolean isAdmin; // true se for admin do evento
+    public boolean coffeeBreak; // se marcou que quer o cafezinho
 
     public Usuario() {}
 
+    // construtor pra criar o usuario no cadastro
     public Usuario(String nome, String email, String ra, String curso, String serie, String senha, boolean isAdmin) {
         this.nome = nome;
         this.email = email;
@@ -29,6 +31,6 @@ public class Usuario {
         this.serie = serie;
         this.senha = senha;
         this.isAdmin = isAdmin;
-        this.coffeeBreak = false;
+        this.coffeeBreak = false; // por padrao comeca como falso
     }
 }

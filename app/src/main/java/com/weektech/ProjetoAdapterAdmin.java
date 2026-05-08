@@ -21,6 +21,7 @@ public class ProjetoAdapterAdmin extends RecyclerView.Adapter<ProjetoAdapterAdmi
         this.projetoDao = dao;
     }
 
+    // atualiza os projetos na tela do admin
     public void setProjetos(List<Projeto> lista) {
         this.lista = lista != null ? lista : new ArrayList<>();
         notifyDataSetChanged();
@@ -41,11 +42,14 @@ public class ProjetoAdapterAdmin extends RecyclerView.Adapter<ProjetoAdapterAdmi
         holder.editData.setText(projeto.getDataApresentacao());
         holder.editHora.setText(projeto.getHoraApresentacao());
 
+        // botao pra salvar a data que o admin marcou
         holder.btnSalvar.setOnClickListener(v -> {
             String data = holder.editData.getText().toString();
             String hora = holder.editHora.getText().toString();
             projeto.setDataApresentacao(data);
             projeto.setHoraApresentacao(hora);
+            
+            // salva no banco em outra thread
             new Thread(() -> projetoDao.update(projeto)).start();
         });
     }
@@ -55,6 +59,7 @@ public class ProjetoAdapterAdmin extends RecyclerView.Adapter<ProjetoAdapterAdmi
         return lista != null ? lista.size() : 0;
     }
 
+    // campos do layout de cada item
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitulo, txtAluno;
         EditText editData, editHora;

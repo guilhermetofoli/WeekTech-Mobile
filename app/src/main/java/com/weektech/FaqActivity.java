@@ -11,6 +11,7 @@ public class FaqActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faq);
 
+        // botao pra fechar a tela de duvidas
         Button btnVoltar = findViewById(R.id.btnVoltar);
 
         btnVoltar.setOnClickListener(v -> {
@@ -21,6 +22,6 @@ public class FaqActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+        finish(); // volta se apertar o botao de voltar do celular
     }
 }

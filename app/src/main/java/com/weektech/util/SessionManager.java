@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class SessionManager {
+    // nomes das chaves pra salvar no sharedpreferences
     private static final String PREF_NAME      = "WeekTechSession";
     private static final String KEY_IS_LOGGED  = "isLoggedIn";
     private static final String KEY_IS_ADMIN   = "isAdmin";
@@ -20,6 +21,7 @@ public class SessionManager {
         editor = pref.edit();
     }
 
+    // cria a sessao quando o cara loga
     public void createLoginSession(boolean isAdmin, String ra, String nome, String email, String curso) {
         editor.putBoolean(KEY_IS_LOGGED, true);
         editor.putBoolean(KEY_IS_ADMIN,  isAdmin);
@@ -30,24 +32,28 @@ public class SessionManager {
         editor.apply();
     }
 
-    // Backward compat overload
+    // sobrecarga so pra nao quebrar se alguem chamar so com boolean
     public void createLoginSession(boolean isAdmin) {
         createLoginSession(isAdmin, "", "", "", "");
     }
 
+    // ve se o usuario ta logado
     public boolean isLoggedIn() {
         return pref.getBoolean(KEY_IS_LOGGED, false);
     }
 
+    // ve se o cara é adm
     public boolean isAdmin() {
         return pref.getBoolean(KEY_IS_ADMIN, false);
     }
 
+    // funcoes pra pegar os dados salvos
     public String getRa()    { return pref.getString(KEY_RA,    ""); }
     public String getNome()  { return pref.getString(KEY_NOME,  ""); }
     public String getEmail() { return pref.getString(KEY_EMAIL, ""); }
     public String getCurso() { return pref.getString(KEY_CURSO, ""); }
 
+    // limpa tudo no logout
     public void logout() {
         editor.clear();
         editor.apply();

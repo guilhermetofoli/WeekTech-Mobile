@@ -7,6 +7,8 @@ import androidx.room.RoomDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// configuracao do banco de dados room
+// aumentei a versao pra resetar o banco por causa das mudancas nas tabelas
 @Database(
         entities = {Palestra.class, Inscricao.class, Usuario.class, Projeto.class},
         version = 15,
@@ -20,6 +22,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProjetoDao projetoDao();
 
     private static volatile AppDatabase INSTANCE;
+    // executor pra rodar as querys fora da main thread
     public static final ExecutorService databaseExecutor = Executors.newFixedThreadPool(4);
 
     public static AppDatabase getInstance(Context context) {
@@ -30,6 +33,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     AppDatabase.class,
                                     "weektech_db")
+                            // se mudar a versao ele apaga e cria de novo
                             .fallbackToDestructiveMigration()
                             .build();
                 }

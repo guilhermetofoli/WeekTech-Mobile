@@ -13,6 +13,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.VH> {
 
     private List<Usuario> usuarios = new ArrayList<>();
 
+    // pra atualizar a lista de alunos na tela
     public void setUsuarios(List<Usuario> lista) {
         this.usuarios = lista != null ? lista : new ArrayList<>();
         notifyDataSetChanged();
@@ -33,6 +34,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.VH> {
         holder.tvRA.setText("RA: " + u.ra);
         holder.tvCurso.setText(u.curso + " - " + u.serie);
         
+        // se o aluno marcou coffee break, mostra a tag verdinha
         if (u.coffeeBreak) {
             holder.tvTagCoffee.setVisibility(View.VISIBLE);
         } else {
@@ -43,6 +45,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.VH> {
     @Override
     public int getItemCount() { return usuarios.size(); }
 
+    // linkando as coisas do xml aqui
     static class VH extends RecyclerView.ViewHolder {
         TextView tvNome, tvRA, tvCurso, tvTagCoffee;
         VH(@NonNull View v) {

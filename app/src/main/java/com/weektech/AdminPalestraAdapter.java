@@ -18,6 +18,7 @@ public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdap
     private Context context;
     private OnAdminActionListener listener;
 
+    // interface pras acoes do admin
     public interface OnAdminActionListener {
         void onToggleAtiva(Palestra palestra);
         void onDeletePalestra(Palestra palestra);
@@ -28,6 +29,7 @@ public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdap
         this.listener = listener;
     }
 
+    // atualiza a lista toda
     public void setPalestras(List<Palestra> palestras) {
         this.palestras = palestras;
         notifyDataSetChanged();
@@ -50,6 +52,7 @@ public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdap
         holder.titulo.setText(palestra.titulo);
         holder.palestrante.setText(palestra.palestrante);
 
+        // cliques nos botoes de editar e excluir
         holder.btnEditar.setOnClickListener(v -> {
             if (listener != null) listener.onEditPalestra(palestra);
         });

@@ -14,7 +14,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin, btnGoToRegister;
     private SessionManager session;
 
-    // Credenciais fixas do administrador
+    // Login do adm que a gente combinou
     private static final String ADMIN_EMAIL = "admin@techweek.com";
     private static final String ADMIN_SENHA = "admin123";
 
@@ -25,13 +25,14 @@ public class LoginActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
 
-        // Se já estiver logado, vai direto para a Home
+        // Se ja estiver logado, nem precisa fazer login de novo, vai direto
         if (session.isLoggedIn()) {
             startActivity(new Intent(this, HomeActivity.class));
             finish();
             return;
         }
 
+        // Pegando as ids do layout
         etUser          = findViewById(R.id.etUser);
         etPassword      = findViewById(R.id.etPassword);
         btnLogin        = findViewById(R.id.btnLogin);
@@ -39,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin.setOnClickListener(v -> realizarLogin());
 
+        // Botao pra quem nao tem conta
         btnGoToRegister.setOnClickListener(v ->
                 startActivity(new Intent(this, RegisterActivity.class)));
     }
@@ -48,11 +50,11 @@ public class LoginActivity extends AppCompatActivity {
         String senha = etPassword.getText().toString().trim();
 
         if (email.isEmpty() || senha.isEmpty()) {
-            Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Preencha tudo ai!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Verifica credenciais do Admin primeiro
+        // Primeiro ve se é o admin tentando entrar
         if (email.equals(ADMIN_EMAIL) && senha.equals(ADMIN_SENHA)) {
             session.createLoginSession(true, "admin", "Administrador", ADMIN_EMAIL, "");
             startActivity(new Intent(this, HomeActivity.class));
@@ -60,14 +62,15 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Valida formato de e-mail
+        // Valida se o email ta no formato certo
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "E-mail inválido!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Esse e-mail tá estranho, confere aí!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         btnLogin.setEnabled(false);
 
+        // Busca no banco pra ver se o aluno existe
         AppDatabase.databaseExecutor.execute(() -> {
             Usuario usuario = AppDatabase.getInstance(this)
                     .usuarioDao()
@@ -76,11 +79,12 @@ public class LoginActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 btnLogin.setEnabled(true);
                 if (usuario != null) {
+                    // Salva a sessao como aluno
                     session.createLoginSession(false, usuario.ra, usuario.nome, usuario.email, usuario.curso);
                     startActivity(new Intent(this, HomeActivity.class));
                     finish();
                 } else {
-                    Toast.makeText(this, "E-mail ou senha incorretos!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "E-mail ou senha errados!", Toast.LENGTH_SHORT).show();
                 }
             });
         });

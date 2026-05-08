@@ -4,6 +4,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+// tabela das palestras no banco
 @Entity(tableName = "palestras")
 public class Palestra {
 
@@ -22,7 +23,7 @@ public class Palestra {
     public String local;
     public String descricao;
     public int    dia;
-    public boolean ativa;
+    public boolean ativa; // pra saber se a palestra ainda ta valendo
 
     public String getTitulo() {
         return titulo;
@@ -32,9 +33,11 @@ public class Palestra {
         return palestrante;
     }
 
+    // campos que nao vao pro banco, so pro controle do app
     @Ignore
     public String statusInscricao = StatusInscricao.DISPONIVEL;
 
+    // estados possiveis da inscricao
     public static class StatusInscricao {
         public static final String DISPONIVEL = "DISPONIVEL";
         public static final String INSCRITO   = "INSCRITO";

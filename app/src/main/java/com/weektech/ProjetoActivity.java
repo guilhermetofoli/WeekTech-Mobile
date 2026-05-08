@@ -23,6 +23,7 @@ import java.util.Locale;
 
 public class ProjetoActivity extends AppCompatActivity {
 
+    // componentes da tela
     private TextInputEditText etNomeProjeto, etDescricao;
     private Button btnSalvarProjeto;
     private ProjetoAdapter projetoAdapter;
@@ -39,6 +40,7 @@ public class ProjetoActivity extends AppCompatActivity {
         session = new SessionManager(this);
         projetoDao = AppDatabase.getInstance(this).projetoDao();
 
+        // pega as referencias do xml
         etNomeProjeto = findViewById(R.id.etNomeProjeto);
         etDescricao = findViewById(R.id.etDescricaoProjeto);
         btnSalvarProjeto = findViewById(R.id.btnSalvarProjeto);
@@ -48,11 +50,13 @@ public class ProjetoActivity extends AppCompatActivity {
 
         rvProjetos.setLayoutManager(new LinearLayoutManager(this));
 
+        // se for admin, nao pode cadastrar projeto, so ver a lista
         if (session.isAdmin()) {
             if (layoutCadastro != null) layoutCadastro.setVisibility(View.GONE);
             adminAdapter = new ProjetoAdapterAdmin(null, projetoDao);
             rvProjetos.setAdapter(adminAdapter);
         } else {
+            // aluno pode cadastrar e ver os dele
             if (layoutCadastro != null) layoutCadastro.setVisibility(View.VISIBLE);
             projetoAdapter = new ProjetoAdapter();
             rvProjetos.setAdapter(projetoAdapter);
@@ -64,6 +68,7 @@ public class ProjetoActivity extends AppCompatActivity {
         btnSalvarProjeto.setOnClickListener(v -> salvarProjeto());
     }
 
+    // trata os cliques no menu de baixo
     private void configurarNavegacao() {
         bottomNav.setSelectedItemId(R.id.nav_projetos);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -95,11 +100,13 @@ public class ProjetoActivity extends AppCompatActivity {
             return false;
         });
         
+        // esconde a aba admin se nao for admin logado
         if (!session.isAdmin()) {
             bottomNav.getMenu().findItem(R.id.nav_admin).setVisible(false);
         }
     }
 
+    // salva o projeto novo do aluno
     private void salvarProjeto() {
         String nomeProjeto = getText(etNomeProjeto);
         String descricao = getText(etDescricao);
@@ -113,6 +120,7 @@ public class ProjetoActivity extends AppCompatActivity {
 
         btnSalvarProjeto.setEnabled(false);
         AppDatabase.databaseExecutor.execute(() -> {
+            // so pode ter um projeto por aluno (RA)
             if (projetoDao.verificarProjetoExistente(ra) > 0) {
                 runOnUiThread(() -> {
                     btnSalvarProjeto.setEnabled(true);
@@ -123,7 +131,7 @@ public class ProjetoActivity extends AppCompatActivity {
 
             Projeto projeto = new Projeto(nome, ra, nomeProjeto, descricao);
             
-            // Adicionando data e hora de criação
+            // coloca a data e hora do servidor local
             projeto.dataCriacao = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
             projeto.horaCriacao = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
@@ -135,7 +143,7 @@ public class ProjetoActivity extends AppCompatActivity {
                     Toast.makeText(this, "Projeto cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
                     etNomeProjeto.setText("");
                     etDescricao.setText("");
-                    carregarProjetos();
+                    carregarProjetos(); // atualiza a lista
                 }
             });
         });
@@ -145,9 +153,11 @@ public class ProjetoActivity extends AppCompatActivity {
         AppDatabase.databaseExecutor.execute(() -> {
             List<Projeto> lista;
             if (session.isAdmin()) {
+                // admin ve tudo
                 lista = projetoDao.listarTodos();
                 runOnUiThread(() -> adminAdapter.setProjetos(lista));
             } else {
+                // aluno so ve os agendados pelo admin
                 lista = projetoDao.listarAgendados();
                 runOnUiThread(() -> projetoAdapter.setProjetos(lista));
             }

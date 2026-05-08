@@ -14,15 +14,17 @@ public class Projeto {
     public String nomeProjeto;
     public String descricao;
 
+    // campos que o admin preenche depois
     public String dataApresentacao;
     public String horaApresentacao;
 
-    // Campos de auditoria/criação
+    // pra saber quando o aluno enviou o projeto
     public String dataCriacao;
     public String horaCriacao;
 
     public Projeto() {}
 
+    // construtor pro aluno cadastrar
     public Projeto(String nome, String ra, String nomeProjeto, String descricao) {
         this.nome = nome;
         this.ra = ra;
@@ -42,7 +44,7 @@ public class Projeto {
         this.horaApresentacao = horaApresentacao;
     }
 
-    // GETTERS E SETTERS
+    // getters e setters pro room funcionar e pra gente usar no app
 
     public int getId() {
         return id;
@@ -100,7 +102,7 @@ public class Projeto {
         this.horaApresentacao = horaApresentacao;
     }
 
-    // Aliases for adapter
+    // apelidos pra facilitar no adapter
     public String getTitulo() {
         return nomeProjeto;
     }

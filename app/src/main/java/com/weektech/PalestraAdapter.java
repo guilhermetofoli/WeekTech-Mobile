@@ -20,6 +20,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
     private final Context context;
     private boolean isAdmin = false;
 
+    // callbacks pra quando clicar nos itens
     public interface OnPalestraClickListener {
         void onInscreverClick(Palestra palestra, int position);
         void onInscritoClick(Palestra palestra, int position);
@@ -35,6 +36,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
         this.listener = listener;
     }
 
+    // define se o usuario logado é admin pra mudar o comportamento da lista
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
         notifyDataSetChanged();
@@ -45,6 +47,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    // atualiza so um item pra nao recarregar a lista inteira
     public void atualizarStatus(int position, String novoStatus) {
         if (position >= 0 && position < palestras.size()) {
             palestras.get(position).statusInscricao = novoStatus;
@@ -70,7 +73,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
         holder.tvPalestrante.setText("Palestrante: " + palestra.palestrante);
         holder.tvLocal.setText(palestra.local);
         
-        // Exibir descrição se disponível para "detalhamento completo"
+        // mostra a descricao se tiver (detalhes da palestra)
         if (palestra.descricao != null && !palestra.descricao.isEmpty()) {
             holder.tvDescricao.setVisibility(View.VISIBLE);
             holder.tvDescricao.setText(palestra.descricao);
@@ -78,6 +81,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
             holder.tvDescricao.setVisibility(View.GONE);
         }
 
+        // se for admin o botao vira "visualizar presencas"
         if (isAdmin) {
             holder.btnAcao.setText("Visualizar Presenças");
             holder.btnAcao.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#1B3A6B")));
@@ -86,6 +90,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
                 if (listener != null) listener.onVisualizarPresencasClick(palestra);
             });
         } else {
+            // se for aluno, o botao muda de cor e texto dependendo do status
             configurarBotao(holder.btnAcao, palestra.statusInscricao);
             holder.btnAcao.setOnClickListener(v -> {
                 if (listener == null) return;
@@ -103,6 +108,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
             });
         }
 
+        // clique no card todo
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 if (isAdmin) {
@@ -119,6 +125,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
         return palestras.size();
     }
 
+    // logica pra mudar as cores e texto do botao de inscricao
     private void configurarBotao(Button btn, String status) {
         switch (status) {
             case Palestra.StatusInscricao.DISPONIVEL:
@@ -151,7 +158,7 @@ public class PalestraAdapter extends RecyclerView.Adapter<PalestraAdapter.ViewHo
             tvTitulo      = itemView.findViewById(R.id.tvTitulo);
             tvPalestrante = itemView.findViewById(R.id.tvPalestrante);
             tvLocal       = itemView.findViewById(R.id.tvLocal);
-            tvDescricao   = itemView.findViewById(R.id.tvDescricao); // Novo campo
+            tvDescricao   = itemView.findViewById(R.id.tvDescricao);
             btnAcao       = itemView.findViewById(R.id.btnAcao);
         }
     }

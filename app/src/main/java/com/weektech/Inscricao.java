@@ -9,23 +9,15 @@ public class Inscricao {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
-    // RA do usuário
     public String raUsuario;
-
-    // ID do aluno
     public int alunoId;
-
-    // ID da palestra
     public int palestraId;
-
-    // Controle de presença
-    public boolean presente;
-
-    // Data de confirmação da inscrição
+    public boolean presente; // true se confirmou presenca
     public String dataConfirmacao;
 
     public Inscricao() {}
 
+    // construtor simples pra inscricao rapida
     public Inscricao(String raUsuario, int palestraId) {
         this.raUsuario = raUsuario;
         this.palestraId = palestraId;
@@ -42,7 +34,7 @@ public class Inscricao {
         this.dataConfirmacao = dataConfirmacao;
     }
 
-    // GETTERS E SETTERS
+    // getters e setters basicos
 
     public int getId() {
         return id;

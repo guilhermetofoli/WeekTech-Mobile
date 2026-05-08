@@ -29,25 +29,26 @@ public class HomeActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         bottomNav = findViewById(R.id.bottomNav);
 
-        // ViewPager com os 3 dias
+        // configura o adapter das abas dos dias
         DiasPagerAdapter pagerAdapter = new DiasPagerAdapter(this);
         viewPager.setAdapter(pagerAdapter);
 
+        // coloca o texto de cada aba
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
                 tab.setText("Dia " + (position + 1))).attach();
 
-        // Esconder Admin para Alunos
+        // se o cara nao for admin, tira o menu de admin do rodape
         if (!session.isAdmin()) {
             Menu menu = bottomNav.getMenu();
             MenuItem adminItem = menu.findItem(R.id.nav_admin);
             if (adminItem != null) adminItem.setVisible(false);
         }
 
-        // Bottom Navigation
+        // trata os cliques no menu de baixo
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_schedule) {
-                return true;
+                return true; // ja ta aqui
             } else if (id == R.id.nav_perfil) {
                 startActivity(new Intent(this, PerfilActivity.class));
                 return true;
@@ -55,6 +56,7 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ProjetoActivity.class));
                 return true;
             } else if (id == R.id.nav_admin) {
+                // so entra se for admin mesmo
                 if (session.isAdmin()) {
                     startActivity(new Intent(this, AdminActivity.class));
                 } else {

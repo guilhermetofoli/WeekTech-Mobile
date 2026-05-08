@@ -25,6 +25,7 @@ public class PalestrasDiaFragment extends Fragment
     private InscricaoDao    inscricaoDao;
     private SessionManager  session;
 
+    // padrao do fragment pra passar o dia
     public static PalestrasDiaFragment newInstance(int dia) {
         PalestrasDiaFragment fragment = new PalestrasDiaFragment();
         Bundle args = new Bundle();
@@ -55,10 +56,12 @@ public class PalestrasDiaFragment extends Fragment
 
         session = new SessionManager(requireContext());
 
+        // configurando a lista
         rvPalestras = view.findViewById(R.id.rvPalestras);
         rvPalestras.setLayoutManager(new LinearLayoutManager(getContext()));
 
         adapter = new PalestraAdapter(getContext(), this);
+        // passa se é admin pro adapter saber o que mostrar
         adapter.setAdmin(session.isAdmin());
         rvPalestras.setAdapter(adapter);
 
@@ -66,12 +69,14 @@ public class PalestrasDiaFragment extends Fragment
         palestraDao  = db.palestraDao();
         inscricaoDao = db.inscricaoDao();
 
+        // pega as palestras do dia e atualiza a tela
         palestraDao.listarPorDia(dia).observe(getViewLifecycleOwner(), palestras -> {
             if (palestras == null || palestras.isEmpty()) {
                 adapter.setPalestras(new ArrayList<>());
                 return;
             }
 
+            // checa o status de inscricao em background
             AppDatabase.databaseExecutor.execute(() -> {
                 String raUsuario = session.getRa();
 
@@ -86,7 +91,10 @@ public class PalestrasDiaFragment extends Fragment
                     }
                 }
 
-                requireActivity().runOnUiThread(() -> adapter.setPalestras(palestras));
+                // volta pra main thread pra mostrar na lista
+                if (isAdded()) {
+                    requireActivity().runOnUiThread(() -> adapter.setPalestras(palestras));
+                }
             });
         });
     }
@@ -99,29 +107,35 @@ public class PalestrasDiaFragment extends Fragment
             return;
         }
 
+        // salva a inscricao no banco
         AppDatabase.databaseExecutor.execute(() -> {
             if (inscricaoDao.verificarDuplicata(ra, palestra.id) > 0) {
-                requireActivity().runOnUiThread(() ->
+                if (isAdded()) {
+                    requireActivity().runOnUiThread(() ->
                         Toast.makeText(getContext(), "Você já está inscrito nesta palestra.", Toast.LENGTH_SHORT).show());
+                }
                 return;
             }
 
             Inscricao inscricao = new Inscricao(ra, palestra.id);
             long id = inscricaoDao.inserir(inscricao);
 
-            requireActivity().runOnUiThread(() -> {
-                if (id > 0) {
-                    adapter.atualizarStatus(position, Palestra.StatusInscricao.INSCRITO);
-                    Toast.makeText(getContext(), "Inscrição realizada com sucesso! ✓", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Erro ao realizar inscrição.", Toast.LENGTH_SHORT).show();
-                }
-            });
+            if (isAdded()) {
+                requireActivity().runOnUiThread(() -> {
+                    if (id > 0) {
+                        adapter.atualizarStatus(position, Palestra.StatusInscricao.INSCRITO);
+                        Toast.makeText(getContext(), "Inscrição realizada! ✓", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Erro ao se inscrever.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         });
     }
 
     @Override
     public void onInscritoClick(Palestra palestra, int position) {
+        // se ja ta inscrito abre o checkin
         onCardClick(palestra, position);
     }
 
@@ -132,6 +146,7 @@ public class PalestrasDiaFragment extends Fragment
 
     @Override
     public void onCardClick(Palestra palestra, int position) {
+        // abre a tela de checkin
         Intent intent = new Intent(getContext(), CheckInActivity.class);
         intent.putExtra("PALESTRA_ID",     palestra.id);
         intent.putExtra("PALESTRA_TITULO", palestra.titulo);
@@ -140,6 +155,7 @@ public class PalestrasDiaFragment extends Fragment
 
     @Override
     public void onVisualizarPresencasClick(Palestra palestra) {
+        // acao de admin pra ver quem confirmou
         Intent intent = new Intent(getContext(), PresencasActivity.class);
         intent.putExtra("palestra_id", palestra.id);
         startActivity(intent);

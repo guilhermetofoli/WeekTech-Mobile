@@ -14,18 +14,22 @@ public interface PalestraDao {
     @Insert
     long inserir(Palestra palestra);
 
+    // pra atualizar os dados da palestra na edicao
     @Update
     void update(Palestra palestra);
 
     @Delete
     void delete(Palestra palestra);
 
+    // pega a lista completa de palestras
     @Query("SELECT * FROM palestras ORDER BY id DESC")
     LiveData<List<Palestra>> listarTodas();
 
+    // lista as palestras de um dia especifico que tao ativas
     @Query("SELECT * FROM palestras WHERE dia = :diaParam AND ativa = 1")
     LiveData<List<Palestra>> listarPorDia(int diaParam);
 
+    // ativa ou desativa a palestra
     @Query("UPDATE palestras SET ativa = :status WHERE id = :id")
     void atualizarStatus(int id, boolean status);
 

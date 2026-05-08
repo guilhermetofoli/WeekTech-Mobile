@@ -21,6 +21,7 @@ import com.weektech.util.SessionManager;
 public class AdminActivity extends AppCompatActivity
         implements AdminPalestraAdapter.OnAdminActionListener {
 
+    // variaveis da tela
     private TextInputEditText etTitulo, etPalestrante, etHoraInicio, etHoraFim,
             etLocal, etDescricao;
     private Spinner   spinnerDia, spinnerTempo;
@@ -28,7 +29,7 @@ public class AdminActivity extends AppCompatActivity
     private RecyclerView rvAdminPalestras;
     private AdminPalestraAdapter adminAdapter;
     private PalestraDao palestraDao;
-    private Palestra palestraSendoEditada = null;
+    private Palestra palestraSendoEditada = null; // guarda qual palestra to editando
     private BottomNavigationView bottomNav;
     private SessionManager session;
     private TextView tvFormTitle;
@@ -41,6 +42,7 @@ public class AdminActivity extends AppCompatActivity
         session = new SessionManager(this);
         palestraDao = AppDatabase.getInstance(this).palestraDao();
 
+        // ligando os componentes do xml
         etTitulo      = findViewById(R.id.etAdminTitulo);
         etPalestrante = findViewById(R.id.etAdminPalestrante);
         etHoraInicio  = findViewById(R.id.etAdminHoraInicio);
@@ -54,14 +56,14 @@ public class AdminActivity extends AppCompatActivity
         bottomNav     = findViewById(R.id.bottomNav);
         tvFormTitle   = findViewById(R.id.tvAdminFormTitle);
 
-        // Spinner Dia
+        // configura o spinner dos dias
         ArrayAdapter<String> adapterDia = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item,
                 new String[]{"Dia 1", "Dia 2", "Dia 3"});
         adapterDia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDia.setAdapter(adapterDia);
 
-        // Spinner Tempo
+        // spinner do tempo (40 a 60 min)
         String[] tempos = new String[21];
         for (int i = 0; i <= 20; i++) tempos[i] = (40 + i) + " minutos";
         ArrayAdapter<String> adapterTempo = new ArrayAdapter<>(this,
@@ -69,15 +71,18 @@ public class AdminActivity extends AppCompatActivity
         adapterTempo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTempo.setAdapter(adapterTempo);
 
+        // configura a lista de palestras
         rvAdminPalestras.setLayoutManager(new LinearLayoutManager(this));
         adminAdapter = new AdminPalestraAdapter(this);
         rvAdminPalestras.setAdapter(adminAdapter);
 
+        // observa as palestras do banco
         palestraDao.listarTodas().observe(this, palestras ->
                 adminAdapter.setPalestras(palestras));
 
         btnSalvarPalestra.setOnClickListener(v -> salvarPalestra());
 
+        // abre a tela de gerenciar alunos
         findViewById(R.id.btnGerenciarAlunos).setOnClickListener(v -> {
             startActivity(new Intent(this, ListaAlunosActivity.class));
         });
@@ -85,6 +90,7 @@ public class AdminActivity extends AppCompatActivity
         configurarNavegacao();
     }
 
+    // menu de baixo
     private void configurarNavegacao() {
         bottomNav.setSelectedItemId(R.id.nav_admin);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -108,6 +114,7 @@ public class AdminActivity extends AppCompatActivity
         });
     }
 
+    // funcao pra salvar ou atualizar
     private void salvarPalestra() {
         String titulo     = getText(etTitulo);
         String palestrante= getText(etPalestrante);
@@ -125,6 +132,7 @@ public class AdminActivity extends AppCompatActivity
 
         btnSalvarPalestra.setEnabled(false);
 
+        // se for edicao usa a mesma, senao cria nova
         Palestra p = (palestraSendoEditada != null) ? palestraSendoEditada : new Palestra();
         p.titulo = titulo;
         p.palestrante = palestrante;
@@ -155,6 +163,7 @@ public class AdminActivity extends AppCompatActivity
 
     @Override
     public void onEditPalestra(Palestra palestra) {
+        // preenche o form com os dados pra editar
         palestraSendoEditada = palestra;
         etTitulo.setText(palestra.titulo);
         etPalestrante.setText(palestra.palestrante);
@@ -168,7 +177,7 @@ public class AdminActivity extends AppCompatActivity
         btnSalvarPalestra.setText("ATUALIZAR PALESTRA");
         tvFormTitle.setText("EDITAR PALESTRA");
         
-        // Scroll suave para o topo
+        // sobe a tela
         findViewById(R.id.tvAdminFormTitle).getParent().getParent().requestLayout();
         ((View)findViewById(R.id.tvAdminFormTitle).getParent().getParent()).scrollTo(0, 0);
     }
