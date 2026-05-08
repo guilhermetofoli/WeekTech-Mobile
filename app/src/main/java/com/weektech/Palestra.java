@@ -24,6 +24,14 @@ public class Palestra {
     public int    dia;
     public boolean ativa;
 
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getPalestrante() {
+        return palestrante;
+    }
+
     @Ignore
     public String statusInscricao = StatusInscricao.DISPONIVEL;
 
