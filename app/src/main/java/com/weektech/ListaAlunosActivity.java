@@ -53,9 +53,29 @@ public class ListaAlunosActivity extends AppCompatActivity {
     private void carregarAlunos() {
         AppDatabase.databaseExecutor.execute(() -> {
             todosUsuarios = db.usuarioDao().listarTodos();
-            // depois de carregar, aplica o filtro da aba selecionada
-            runOnUiThread(() -> filtrarLista(tabLayout.getSelectedTabPosition()));
+            
+            // Calcula os contadores
+            long total = todosUsuarios.size();
+            long coffee = todosUsuarios.stream().filter(u -> u.coffeeBreak).count();
+            
+            // depois de carregar, aplica o filtro da aba selecionada e atualiza os textos
+            runOnUiThread(() -> {
+                atualizarContadores(total, coffee);
+                filtrarLista(tabLayout.getSelectedTabPosition());
+            });
         });
+    }
+
+    private void atualizarContadores(long total, long coffee) {
+        TabLayout.Tab tabTodos = tabLayout.getTabAt(0);
+        if (tabTodos != null) {
+            tabTodos.setText("TODOS (" + total + ")");
+        }
+        
+        TabLayout.Tab tabCoffee = tabLayout.getTabAt(1);
+        if (tabCoffee != null) {
+            tabCoffee.setText("COFFEE BREAK (" + coffee + ") ☕");
+        }
     }
 
     // logica pra filtrar quem marcou coffee break
