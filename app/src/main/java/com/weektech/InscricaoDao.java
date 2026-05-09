@@ -37,6 +37,9 @@ public interface InscricaoDao {
     @Query("UPDATE inscricoes SET presente = 1, dataConfirmacao = :data WHERE raUsuario = :ra AND palestraId = :palestraId")
     int confirmarPresenca(String ra, int palestraId, String data);
 
+    @Query("SELECT COUNT(*) FROM inscricoes WHERE raUsuario = :ra AND palestraId = :palestraId AND presente = 1")
+    int verificarPresenca(String ra, int palestraId);
+
     @Query("SELECT * FROM inscricoes WHERE palestraId = :palestraId AND presente = 1")
     List<Inscricao> getPresencasByPalestra(int palestraId);
 }

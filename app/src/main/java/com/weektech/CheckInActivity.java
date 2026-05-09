@@ -35,6 +35,28 @@ public class CheckInActivity extends AppCompatActivity {
         tvNomePalestra.setText(titulo != null ? titulo : "Palestra");
 
         btnConfirmarCheckin.setOnClickListener(v -> confirmarPresenca());
+
+        // verifica se o cabra já confirmou antes de mostrar o botão liberado
+        verificarPresencaExistente();
+    }
+
+    // verifica no banco se ja existe o checkin desse aluno nessa palestra
+    private void verificarPresencaExistente() {
+        String ra = session.getRa();
+        if (ra.isEmpty() || palestraId == -1) return;
+
+        AppDatabase.databaseExecutor.execute(() -> {
+            InscricaoDao dao = AppDatabase.getInstance(this).inscricaoDao();
+            int jaConfirmou = dao.verificarPresenca(ra, palestraId);
+
+            if (jaConfirmou > 0) {
+                runOnUiThread(() -> {
+                    btnConfirmarCheckin.setEnabled(false);
+                    btnConfirmarCheckin.setText("Presença Já Confirmada");
+                    tvStatusLocalizacao.setText("✓ Presença confirmada anteriormente!\nRA: " + ra);
+                });
+            }
+        });
     }
 
     // faz o checkin do aluno na palestra
@@ -63,11 +85,13 @@ public class CheckInActivity extends AppCompatActivity {
             int rows = dao.confirmarPresenca(ra, palestraId, dataHora);
 
             runOnUiThread(() -> {
-                btnConfirmarCheckin.setEnabled(true);
                 if (rows > 0) {
+                    btnConfirmarCheckin.setEnabled(false);
+                    btnConfirmarCheckin.setText("Presença Já Confirmada");
                     tvStatusLocalizacao.setText("✓ Presença confirmada com sucesso!\nRA: " + ra);
                     Toast.makeText(this, "Presença confirmada!", Toast.LENGTH_LONG).show();
                 } else {
+                    btnConfirmarCheckin.setEnabled(true);
                     // se nao achou a linha é pq o cara nao se inscreveu antes
                     tvStatusLocalizacao.setText("Erro: Você deve se inscrever na palestra antes de confirmar presença.");
                     Toast.makeText(this, "Inscrição não encontrada.", Toast.LENGTH_SHORT).show();
