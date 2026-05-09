@@ -194,7 +194,16 @@ public class ProjetoActivity extends AppCompatActivity
         AppDatabase.databaseExecutor.execute(() -> {
             if (session.isAdmin()) {
                 todosProjetos = projetoDao.listarTodos();
-                runOnUiThread(() -> filtrarProjetos(tabLayout.getSelectedTabPosition()));
+                
+                // Calcula os totais de cada categoria
+                long countPendentes = todosProjetos.stream().filter(p -> "PENDENTE".equals(p.status)).count();
+                long countAprovados = todosProjetos.stream().filter(p -> "APROVADO".equals(p.status)).count();
+                long countReprovados = todosProjetos.stream().filter(p -> "REPROVADO".equals(p.status)).count();
+
+                runOnUiThread(() -> {
+                    atualizarContadoresTabs(countPendentes, countAprovados, countReprovados);
+                    filtrarProjetos(tabLayout.getSelectedTabPosition());
+                });
             } else {
                 // Aluno vê os dele (mesmo pendente/reprovado)
                 List<Projeto> meusProjetos = new ArrayList<>();
@@ -212,6 +221,19 @@ public class ProjetoActivity extends AppCompatActivity
                 runOnUiThread(() -> projetoAdapter.setProjetos(meusProjetos));
             }
         });
+    }
+
+    private void atualizarContadoresTabs(long p, long a, long r) {
+        if (tabLayout == null) return;
+        
+        TabLayout.Tab tabP = tabLayout.getTabAt(0);
+        if (tabP != null) tabP.setText("PENDENTES (" + p + ")");
+        
+        TabLayout.Tab tabA = tabLayout.getTabAt(1);
+        if (tabA != null) tabA.setText("APROVADAS (" + a + ")");
+        
+        TabLayout.Tab tabR = tabLayout.getTabAt(2);
+        if (tabR != null) tabR.setText("REPROVADAS (" + r + ")");
     }
 
     private void filtrarProjetos(int position) {

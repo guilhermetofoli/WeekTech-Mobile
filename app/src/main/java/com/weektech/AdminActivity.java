@@ -73,13 +73,9 @@ public class AdminActivity extends AppCompatActivity
         spinnerDia.setAdapter(adapterDia);
 
         // spinner do tempo (presets)
-        String[] temposLabels = {"15 minutos", "30 minutos", "45 minutos", "60 minutos", "1h 15min", "1h 30min"};
-        int[] temposValores = {15, 30, 45, 60, 75, 90};
-        
-        ArrayAdapter<String> adapterTempo = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, temposLabels);
-        adapterTempo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerTempo.setAdapter(adapterTempo);
+        String[] temposLabelsPreset = {"15 minutos", "30 minutos", "45 minutos", "60 minutos", "1h 15min", "1h 30min"};
+        // Note: these presets might be overwritten by prepararTempos() later if they are not compatible.
+        // Actually prepararTempos() is called below.
 
         // configura a lista de palestras
         rvAdminPalestras.setLayoutManager(new LinearLayoutManager(this));
@@ -158,6 +154,20 @@ public class AdminActivity extends AppCompatActivity
                 String str = s.toString().replaceAll("[^\\d]", "");
                 if (str.length() > 4) str = str.substring(0, 4);
 
+                // Validação de limites (00:00 a 23:59)
+                if (str.length() >= 1) {
+                    int h1 = Integer.parseInt(str.substring(0, 1));
+                    if (h1 > 2) str = "2"; // Primeiro dígito da hora max 2
+                }
+                if (str.length() >= 2) {
+                    int hora = Integer.parseInt(str.substring(0, 2));
+                    if (hora > 23) str = "23"; // Hora max 23
+                }
+                if (str.length() >= 3) {
+                    int m1 = Integer.parseInt(str.substring(2, 3));
+                    if (m1 > 5) str = str.substring(0, 2) + "5"; // Primeiro dígito do minuto max 5
+                }
+
                 String formatted = str;
                 if (str.length() >= 3) {
                     formatted = str.substring(0, 2) + ":" + str.substring(2);
@@ -211,6 +221,12 @@ public class AdminActivity extends AppCompatActivity
 
         if (titulo.isEmpty() || palestrante.isEmpty() || horaInicio.isEmpty() || horaFim.isEmpty()) {
             Toast.makeText(this, "Preencha os campos obrigatórios!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validação extra de segurança para formato HH:mm completo
+        if (horaInicio.length() < 5 || horaFim.length() < 5) {
+            Toast.makeText(this, "Preencha o horário completo (ex: 09:00)", Toast.LENGTH_SHORT).show();
             return;
         }
 

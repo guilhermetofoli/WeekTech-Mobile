@@ -58,7 +58,7 @@ public class ProjetoAdapterAdmin extends RecyclerView.Adapter<ProjetoAdapterAdmi
         holder.editHoraInicio.setText(projeto.getHoraInicioApresentacao());
         holder.editHoraFim.setText(projeto.getHoraFimApresentacao());
 
-        // Configuração visual baseada no STATUS
+        // Controla visibilidade baseado no status
         if ("REPROVADO".equals(projeto.status)) {
             holder.layoutAgendamento.setVisibility(View.GONE);
             holder.btnReprovar.setVisibility(View.GONE);
@@ -131,6 +131,11 @@ public class ProjetoAdapterAdmin extends RecyclerView.Adapter<ProjetoAdapterAdmi
                     return;
                 }
 
+                if (inicio.length() < 5 || fim.length() < 5) {
+                    Toast.makeText(holder.itemView.getContext(), "Horário incompleto!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 projeto.setDataApresentacao(data);
                 projeto.setHoraInicioApresentacao(inicio);
                 projeto.setHoraFimApresentacao(fim);
@@ -155,6 +160,21 @@ public class ProjetoAdapterAdmin extends RecyclerView.Adapter<ProjetoAdapterAdmi
                 if (isUpdating) return;
                 String str = s.toString().replaceAll("[^\\d]", "");
                 if (str.length() > 4) str = str.substring(0, 4);
+
+                // Validação de limites (00:00 a 23:59)
+                if (str.length() >= 1) {
+                    int h1 = Integer.parseInt(str.substring(0, 1));
+                    if (h1 > 2) str = "2";
+                }
+                if (str.length() >= 2) {
+                    int hora = Integer.parseInt(str.substring(0, 2));
+                    if (hora > 23) str = "23";
+                }
+                if (str.length() >= 3) {
+                    int m1 = Integer.parseInt(str.substring(2, 3));
+                    if (m1 > 5) str = str.substring(0, 2) + "5";
+                }
+
                 String formatted = str;
                 if (str.length() >= 3) {
                     formatted = str.substring(0, 2) + ":" + str.substring(2);
