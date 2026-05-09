@@ -1,6 +1,7 @@
 package com.weektech;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "inscricoes")
@@ -18,12 +19,14 @@ public class Inscricao {
     public Inscricao() {}
 
     // construtor simples pra inscricao rapida
+    @Ignore
     public Inscricao(String raUsuario, int palestraId) {
         this.raUsuario = raUsuario;
         this.palestraId = palestraId;
         this.presente = false;
     }
 
+    @Ignore
     public Inscricao(String raUsuario, int alunoId, int palestraId,
                      boolean presente, String dataConfirmacao) {
 

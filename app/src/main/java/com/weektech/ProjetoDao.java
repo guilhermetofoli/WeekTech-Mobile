@@ -22,7 +22,7 @@ public interface ProjetoDao {
     List<Projeto> listarTodos();
 
     // so os projetos que o admin ja marcou data
-    @Query("SELECT * FROM projetos WHERE dataApresentacao IS NOT NULL AND dataApresentacao != '' ORDER BY dataApresentacao, horaApresentacao ASC")
+    @Query("SELECT * FROM projetos WHERE dataApresentacao IS NOT NULL AND dataApresentacao != '' ORDER BY dataApresentacao, horaInicioApresentacao ASC")
     List<Projeto> listarAgendados();
 
     // checa se o aluno ja enviou algum projeto

@@ -30,7 +30,16 @@
             android:id="@+id/txtAluno"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Aluno: Nome (RA)"
+            android:text="Aluno (NOME) | (RA)"
+            android:textColor="#1B3A6B"
+            android:textSize="13sp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/txtDescricaoProjeto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Descrição do projeto detalhada aqui..."
             android:textColor="#6B7C93"
             android:textSize="13sp"
             android:layout_marginBottom="16dp"/>
@@ -50,6 +59,28 @@
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
 
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:hint="Data da Apresentação"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:startIconDrawable="@drawable/ic_calendar">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editDataApresentacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                android:textSize="14sp"
+                android:padding="12dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,17 +92,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:hint="Data"
+                android:layout_marginEnd="4dp"
+                android:hint="Início"
                 app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
                 app:boxCornerRadiusBottomEnd="8dp">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editDataApresentacao"
+                    android:id="@+id/editHoraInicio"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="date"
+                    android:inputType="time"
+                    android:maxLength="5"
                     android:textSize="14sp"
                     android:padding="12dp"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -81,17 +113,19 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginStart="4dp"
                 android:layout_marginEnd="8dp"
-                android:hint="Hora"
+                android:hint="Fim"
                 app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
                 app:boxCornerRadiusBottomEnd="8dp">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editHoraApresentacao"
+                    android:id="@+id/editHoraFim"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="time"
+                    android:maxLength="5"
                     android:textSize="14sp"
                     android:padding="12dp"/>
             </com.google.android.material.textfield.TextInputLayout>

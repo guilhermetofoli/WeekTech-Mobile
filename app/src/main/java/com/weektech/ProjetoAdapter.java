@@ -48,7 +48,8 @@ public class ProjetoAdapter extends RecyclerView.Adapter<ProjetoAdapter.VH> {
         // se o admin ja marcou a apresentacao, mostra os detalhes no card
         if (p.dataApresentacao != null && !p.dataApresentacao.isEmpty()) {
             holder.layoutAgendamento.setVisibility(View.VISIBLE);
-            holder.tvAgendamentoInfo.setText("Apresentação: " + p.dataApresentacao + " às " + p.horaApresentacao);
+            holder.tvAgendamentoInfo.setText("Apresentação: " + p.dataApresentacao + 
+                " de " + p.horaInicioApresentacao + " até " + p.horaFimApresentacao);
         } else {
             holder.layoutAgendamento.setVisibility(View.GONE);
         }

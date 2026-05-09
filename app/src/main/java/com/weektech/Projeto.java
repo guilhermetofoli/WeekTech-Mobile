@@ -1,6 +1,7 @@
 package com.weektech;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "projetos")
@@ -16,7 +17,8 @@ public class Projeto {
 
     // campos que o admin preenche depois
     public String dataApresentacao;
-    public String horaApresentacao;
+    public String horaInicioApresentacao;
+    public String horaFimApresentacao;
 
     // pra saber quando o aluno enviou o projeto
     public String dataCriacao;
@@ -25,6 +27,7 @@ public class Projeto {
     public Projeto() {}
 
     // construtor pro aluno cadastrar
+    @Ignore
     public Projeto(String nome, String ra, String nomeProjeto, String descricao) {
         this.nome = nome;
         this.ra = ra;
@@ -32,16 +35,18 @@ public class Projeto {
         this.descricao = descricao;
     }
 
+    @Ignore
     public Projeto(String nome, String ra, String nomeProjeto,
                    String descricao, String dataApresentacao,
-                   String horaApresentacao) {
+                   String horaInicioApresentacao, String horaFimApresentacao) {
 
         this.nome = nome;
         this.ra = ra;
         this.nomeProjeto = nomeProjeto;
         this.descricao = descricao;
         this.dataApresentacao = dataApresentacao;
-        this.horaApresentacao = horaApresentacao;
+        this.horaInicioApresentacao = horaInicioApresentacao;
+        this.horaFimApresentacao = horaFimApresentacao;
     }
 
     // getters e setters pro room funcionar e pra gente usar no app
@@ -94,12 +99,20 @@ public class Projeto {
         this.dataApresentacao = dataApresentacao;
     }
 
-    public String getHoraApresentacao() {
-        return horaApresentacao;
+    public String getHoraInicioApresentacao() {
+        return horaInicioApresentacao;
     }
 
-    public void setHoraApresentacao(String horaApresentacao) {
-        this.horaApresentacao = horaApresentacao;
+    public void setHoraInicioApresentacao(String horaInicioApresentacao) {
+        this.horaInicioApresentacao = horaInicioApresentacao;
+    }
+
+    public String getHoraFimApresentacao() {
+        return horaFimApresentacao;
+    }
+
+    public void setHoraFimApresentacao(String horaFimApresentacao) {
+        this.horaFimApresentacao = horaFimApresentacao;
     }
 
     // apelidos pra facilitar no adapter

@@ -1,6 +1,7 @@
 package com.weektech;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.Index;
 
@@ -23,6 +24,7 @@ public class Usuario {
     public Usuario() {}
 
     // construtor pra criar o usuario no cadastro
+    @Ignore
     public Usuario(String nome, String email, String ra, String curso, String serie, String senha, boolean isAdmin) {
         this.nome = nome;
         this.email = email;
