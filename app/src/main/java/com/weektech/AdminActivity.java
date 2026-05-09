@@ -2,6 +2,8 @@ package com.weektech;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -11,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +36,11 @@ public class AdminActivity extends AppCompatActivity
     private BottomNavigationView bottomNav;
     private SessionManager session;
     private TextView tvFormTitle;
+    private NestedScrollView nestedScrollView;
+
+    // Listas para o Spinner de Tempo
+    private String[] temposLabels;
+    private int[] temposValores;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +63,7 @@ public class AdminActivity extends AppCompatActivity
         rvAdminPalestras  = findViewById(R.id.rvAdminPalestras);
         bottomNav     = findViewById(R.id.bottomNav);
         tvFormTitle   = findViewById(R.id.tvAdminFormTitle);
+        nestedScrollView = findViewById(R.id.nestedScrollViewAdmin);
 
         // configura o spinner dos dias
         ArrayAdapter<String> adapterDia = new ArrayAdapter<>(this,
@@ -63,11 +72,12 @@ public class AdminActivity extends AppCompatActivity
         adapterDia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDia.setAdapter(adapterDia);
 
-        // spinner do tempo (40 a 60 min)
-        String[] tempos = new String[21];
-        for (int i = 0; i <= 20; i++) tempos[i] = (40 + i) + " minutos";
+        // spinner do tempo (presets)
+        String[] temposLabels = {"15 minutos", "30 minutos", "45 minutos", "60 minutos", "1h 15min", "1h 30min"};
+        int[] temposValores = {15, 30, 45, 60, 75, 90};
+        
         ArrayAdapter<String> adapterTempo = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, tempos);
+                android.R.layout.simple_spinner_item, temposLabels);
         adapterTempo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTempo.setAdapter(adapterTempo);
 
@@ -80,6 +90,7 @@ public class AdminActivity extends AppCompatActivity
         palestraDao.listarTodas().observe(this, palestras ->
                 adminAdapter.setPalestras(palestras));
 
+        prepararTempos();
         btnSalvarPalestra.setOnClickListener(v -> salvarPalestra());
 
         // abre a tela de gerenciar alunos
@@ -87,7 +98,80 @@ public class AdminActivity extends AppCompatActivity
             startActivity(new Intent(this, ListaAlunosActivity.class));
         });
 
+        aplicarMascaras();
         configurarNavegacao();
+    }
+
+    private void prepararTempos() {
+        // Gera tempos de 15 em 15 minutos até 5 horas (300 min) + Dia Inteiro
+        int maxMinutos = 300;
+        int passo = 15;
+        int quantidade = (maxMinutos / passo) + 1; // +1 para o "Dia Inteiro"
+        
+        temposLabels = new String[quantidade];
+        temposValores = new int[quantidade];
+
+        for (int i = 0; i < quantidade - 1; i++) {
+            int totalMinutos = (i + 1) * passo;
+            temposValores[i] = totalMinutos;
+            
+            if (totalMinutos < 60) {
+                temposLabels[i] = totalMinutos + " minutos";
+            } else {
+                int horas = totalMinutos / 60;
+                int minutos = totalMinutos % 60;
+                if (minutos == 0) {
+                    temposLabels[i] = horas + "h";
+                } else {
+                    temposLabels[i] = horas + "h " + minutos + "min";
+                }
+            }
+        }
+        
+        // Adiciona a opção de Dia Inteiro
+        temposLabels[quantidade - 1] = "Dia Inteiro";
+        temposValores[quantidade - 1] = 1440; // 24 horas
+
+        ArrayAdapter<String> adapterTempo = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, temposLabels);
+        adapterTempo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTempo.setAdapter(adapterTempo);
+    }
+
+    // aplica mascara de hora (HH:mm) nos campos de horario
+    private void aplicarMascaras() {
+        aplicarMascaraHora(etHoraInicio);
+        aplicarMascaraHora(etHoraFim);
+    }
+
+    private void aplicarMascaraHora(TextInputEditText editText) {
+        editText.addTextChangedListener(new TextWatcher() {
+            private boolean isUpdating = false;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isUpdating) return;
+
+                String str = s.toString().replaceAll("[^\\d]", "");
+                if (str.length() > 4) str = str.substring(0, 4);
+
+                String formatted = str;
+                if (str.length() >= 3) {
+                    formatted = str.substring(0, 2) + ":" + str.substring(2);
+                }
+
+                isUpdating = true;
+                editText.setText(formatted);
+                editText.setSelection(formatted.length());
+                isUpdating = false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
 
     // menu de baixo
@@ -123,7 +207,7 @@ public class AdminActivity extends AppCompatActivity
         String local      = getText(etLocal);
         String descricao  = getText(etDescricao);
         int    dia        = spinnerDia.getSelectedItemPosition() + 1;
-        int    tempo      = 40 + spinnerTempo.getSelectedItemPosition();
+        int    tempo      = temposValores[spinnerTempo.getSelectedItemPosition()];
 
         if (titulo.isEmpty() || palestrante.isEmpty() || horaInicio.isEmpty() || horaFim.isEmpty()) {
             Toast.makeText(this, "Preencha os campos obrigatórios!", Toast.LENGTH_SHORT).show();
@@ -172,14 +256,20 @@ public class AdminActivity extends AppCompatActivity
         etLocal.setText(palestra.local);
         etDescricao.setText(palestra.descricao);
         spinnerDia.setSelection(palestra.dia - 1);
-        spinnerTempo.setSelection(Math.max(0, palestra.tempo - 40));
+        
+        // seleciona o tempo correto no spinner baseado no valor do banco
+        for (int i = 0; i < temposValores.length; i++) {
+            if (temposValores[i] == palestra.tempo) {
+                spinnerTempo.setSelection(i);
+                break;
+            }
+        }
         
         btnSalvarPalestra.setText("ATUALIZAR PALESTRA");
         tvFormTitle.setText("EDITAR PALESTRA");
         
-        // sobe a tela
-        findViewById(R.id.tvAdminFormTitle).getParent().getParent().requestLayout();
-        ((View)findViewById(R.id.tvAdminFormTitle).getParent().getParent()).scrollTo(0, 0);
+        // sobe a tela para o formulario usando o scroll
+        nestedScrollView.smoothScrollTo(0, 0);
     }
 
     @Override
