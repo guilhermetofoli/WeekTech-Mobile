@@ -2,6 +2,8 @@ package com.weektech;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
@@ -39,6 +41,13 @@ public class PerfilActivity extends AppCompatActivity {
         // deixa o icone de perfil selecionado no menu
         bottomNav.setSelectedItemId(R.id.nav_perfil);
 
+        // se o cara nao for admin, tira o menu de admin do rodape
+        if (!session.isAdmin()) {
+            Menu menu = bottomNav.getMenu();
+            MenuItem adminItem = menu.findItem(R.id.nav_admin);
+            if (adminItem != null) adminItem.setVisible(false);
+        }
+
         // vai pra tela de ajuda
         btnFaq.setOnClickListener(v -> {
             Intent intent = new Intent(this, FaqActivity.class);
@@ -70,6 +79,13 @@ public class PerfilActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.nav_perfil) {
                 return true; // ja ta aqui
+            } else if (id == R.id.nav_admin) {
+                if (session.isAdmin()) {
+                    startActivity(new Intent(this, AdminActivity.class));
+                    overridePendingTransition(0, 0);
+                    finish();
+                }
+                return true;
             }
             return false;
         });

@@ -2,6 +2,8 @@ package com.weektech;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -70,40 +72,38 @@ public class ProjetoActivity extends AppCompatActivity {
 
     // trata os cliques no menu de baixo
     private void configurarNavegacao() {
+        // esconde a aba admin se nao for admin logado
+        if (!session.isAdmin()) {
+            Menu menu = bottomNav.getMenu();
+            MenuItem adminItem = menu.findItem(R.id.nav_admin);
+            if (adminItem != null) adminItem.setVisible(false);
+        }
+
         bottomNav.setSelectedItemId(R.id.nav_projetos);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_schedule) {
                 startActivity(new Intent(this, HomeActivity.class));
+                overridePendingTransition(0, 0);
                 finish();
                 return true;
             } else if (id == R.id.nav_projetos) {
                 return true;
             } else if (id == R.id.nav_perfil) {
                 startActivity(new Intent(this, PerfilActivity.class));
+                overridePendingTransition(0, 0);
                 finish();
                 return true;
             } else if (id == R.id.nav_admin) {
                 if (session.isAdmin()) {
                     startActivity(new Intent(this, AdminActivity.class));
+                    overridePendingTransition(0, 0);
                     finish();
-                } else {
-                    new AlertDialog.Builder(this)
-                            .setTitle("Acesso Restrito")
-                            .setMessage("Área exclusiva para administradores.")
-                            .setPositiveButton("OK", null)
-                            .show();
-                    bottomNav.postDelayed(() -> bottomNav.setSelectedItemId(R.id.nav_projetos), 100);
                 }
                 return true;
             }
             return false;
         });
-        
-        // esconde a aba admin se nao for admin logado
-        if (!session.isAdmin()) {
-            bottomNav.getMenu().findItem(R.id.nav_admin).setVisible(false);
-        }
     }
 
     // salva o projeto novo do aluno
