@@ -15,6 +15,9 @@ public class Projeto {
     public String nomeProjeto;
     public String descricao;
 
+    // Status do projeto: PENDENTE, APROVADO, REPROVADO
+    public String status = "PENDENTE";
+
     // campos que o admin preenche depois
     public String dataApresentacao;
     public String horaInicioApresentacao;
@@ -33,6 +36,7 @@ public class Projeto {
         this.ra = ra;
         this.nomeProjeto = nomeProjeto;
         this.descricao = descricao;
+        this.status = "PENDENTE";
     }
 
     @Ignore
@@ -113,6 +117,14 @@ public class Projeto {
 
     public void setHoraFimApresentacao(String horaFimApresentacao) {
         this.horaFimApresentacao = horaFimApresentacao;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     // apelidos pra facilitar no adapter

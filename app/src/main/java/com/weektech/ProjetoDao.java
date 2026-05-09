@@ -28,4 +28,10 @@ public interface ProjetoDao {
     // checa se o aluno ja enviou algum projeto
     @Query("SELECT COUNT(*) FROM projetos WHERE ra = :ra")
     int verificarProjetoExistente(String ra);
+
+    @Query("SELECT * FROM projetos WHERE ra = :ra LIMIT 1")
+    Projeto buscarProjetoPorRa(String ra);
+
+    @Query("DELETE FROM projetos WHERE id = :id")
+    void deletarPorId(int id);
 }

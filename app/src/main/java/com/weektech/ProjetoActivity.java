@@ -15,17 +15,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.weektech.util.SessionManager;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
-public class ProjetoActivity extends AppCompatActivity {
+public class ProjetoActivity extends AppCompatActivity 
+        implements ProjetoAdapterAdmin.OnProjetoStatusChangeListener, ProjetoAdapter.OnProjetoClickListener {
 
-    // componentes da tela
     private TextInputEditText etNomeProjeto, etDescricao;
     private Button btnSalvarProjeto;
     private ProjetoAdapter projetoAdapter;
@@ -33,6 +36,8 @@ public class ProjetoActivity extends AppCompatActivity {
     private ProjetoDao projetoDao;
     private SessionManager session;
     private BottomNavigationView bottomNav;
+    private TabLayout tabLayout;
+    private List<Projeto> todosProjetos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,37 +47,71 @@ public class ProjetoActivity extends AppCompatActivity {
         session = new SessionManager(this);
         projetoDao = AppDatabase.getInstance(this).projetoDao();
 
-        // pega as referencias do xml
         etNomeProjeto = findViewById(R.id.etNomeProjeto);
         etDescricao = findViewById(R.id.etDescricaoProjeto);
         btnSalvarProjeto = findViewById(R.id.btnSalvarProjeto);
         RecyclerView rvProjetos = findViewById(R.id.rvProjetos);
         bottomNav = findViewById(R.id.bottomNav);
+        tabLayout = findViewById(R.id.tabLayoutProjetos);
         LinearLayout layoutCadastro = findViewById(R.id.layoutCadastroProjeto);
 
         rvProjetos.setLayoutManager(new LinearLayoutManager(this));
 
-        // se for admin, nao pode cadastrar projeto, so ver a lista
         if (session.isAdmin()) {
             if (layoutCadastro != null) layoutCadastro.setVisibility(View.GONE);
-            adminAdapter = new ProjetoAdapterAdmin(null, projetoDao);
+            if (tabLayout != null) tabLayout.setVisibility(View.VISIBLE);
+            
+            adminAdapter = new ProjetoAdapterAdmin(null, projetoDao, this);
             rvProjetos.setAdapter(adminAdapter);
+            
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    filtrarProjetos(tab.getPosition());
+                }
+                @Override public void onTabUnselected(TabLayout.Tab tab) {}
+                @Override public void onTabReselected(TabLayout.Tab tab) {}
+            });
         } else {
-            // aluno pode cadastrar e ver os dele
             if (layoutCadastro != null) layoutCadastro.setVisibility(View.VISIBLE);
-            projetoAdapter = new ProjetoAdapter();
+            if (tabLayout != null) tabLayout.setVisibility(View.GONE);
+            
+            projetoAdapter = new ProjetoAdapter(this);
             rvProjetos.setAdapter(projetoAdapter);
         }
 
         configurarNavegacao();
         carregarProjetos();
 
-        btnSalvarProjeto.setOnClickListener(v -> salvarProjeto());
+        if (btnSalvarProjeto != null) {
+            btnSalvarProjeto.setOnClickListener(v -> salvarProjeto());
+        }
     }
 
-    // trata os cliques no menu de baixo
+    @Override
+    public void onStatusChanged() {
+        carregarProjetos();
+    }
+
+    @Override
+    public void onDeleteClick(Projeto projeto) {
+        new AlertDialog.Builder(this)
+                .setTitle("Remover Projeto")
+                .setMessage("Deseja remover este projeto reprovado para enviar um novo?")
+                .setPositiveButton("Sim, Remover", (dialog, which) -> {
+                    AppDatabase.databaseExecutor.execute(() -> {
+                        projetoDao.deletarPorId(projeto.id);
+                        runOnUiThread(() -> {
+                            Toast.makeText(this, "Projeto removido. Você pode enviar um novo agora.", Toast.LENGTH_SHORT).show();
+                            carregarProjetos();
+                        });
+                    });
+                })
+                .setNegativeButton("Não", null)
+                .show();
+    }
+
     private void configurarNavegacao() {
-        // esconde a aba admin se nao for admin logado
         if (!session.isAdmin()) {
             Menu menu = bottomNav.getMenu();
             MenuItem adminItem = menu.findItem(R.id.nav_admin);
@@ -106,7 +145,6 @@ public class ProjetoActivity extends AppCompatActivity {
         });
     }
 
-    // salva o projeto novo do aluno
     private void salvarProjeto() {
         String nomeProjeto = getText(etNomeProjeto);
         String descricao = getText(etDescricao);
@@ -120,30 +158,33 @@ public class ProjetoActivity extends AppCompatActivity {
 
         btnSalvarProjeto.setEnabled(false);
         AppDatabase.databaseExecutor.execute(() -> {
-            // so pode ter um projeto por aluno (RA)
-            if (projetoDao.verificarProjetoExistente(ra) > 0) {
+            Projeto existente = projetoDao.buscarProjetoPorRa(ra);
+            if (existente != null) {
                 runOnUiThread(() -> {
                     btnSalvarProjeto.setEnabled(true);
-                    Toast.makeText(this, "Você já cadastrou um projeto.", Toast.LENGTH_SHORT).show();
+                    String msg = "Você já possui um projeto com status: " + existente.status;
+                    if ("REPROVADO".equals(existente.status)) {
+                        msg += ". Remova-o na lista abaixo para enviar um novo.";
+                    }
+                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
                 });
                 return;
             }
 
             Projeto projeto = new Projeto(nome, ra, nomeProjeto, descricao);
-            
-            // coloca a data e hora do servidor local
             projeto.dataCriacao = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
             projeto.horaCriacao = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+            projeto.status = "PENDENTE";
 
             long id = projetoDao.inserir(projeto);
 
             runOnUiThread(() -> {
                 btnSalvarProjeto.setEnabled(true);
                 if (id > 0) {
-                    Toast.makeText(this, "Projeto cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Projeto enviado para análise!", Toast.LENGTH_SHORT).show();
                     etNomeProjeto.setText("");
                     etDescricao.setText("");
-                    carregarProjetos(); // atualiza a lista
+                    carregarProjetos();
                 }
             });
         });
@@ -151,20 +192,46 @@ public class ProjetoActivity extends AppCompatActivity {
 
     private void carregarProjetos() {
         AppDatabase.databaseExecutor.execute(() -> {
-            List<Projeto> lista;
             if (session.isAdmin()) {
-                // admin ve tudo
-                lista = projetoDao.listarTodos();
-                runOnUiThread(() -> adminAdapter.setProjetos(lista));
+                todosProjetos = projetoDao.listarTodos();
+                runOnUiThread(() -> filtrarProjetos(tabLayout.getSelectedTabPosition()));
             } else {
-                // aluno so ve os agendados pelo admin
-                lista = projetoDao.listarAgendados();
-                runOnUiThread(() -> projetoAdapter.setProjetos(lista));
+                // Aluno vê os dele (mesmo pendente/reprovado)
+                List<Projeto> meusProjetos = new ArrayList<>();
+                Projeto p = projetoDao.buscarProjetoPorRa(session.getRa());
+                if (p != null) meusProjetos.add(p);
+                
+                // E também os agendados (aprovados) de outros alunos
+                List<Projeto> agendados = projetoDao.listarAgendados();
+                for (Projeto a : agendados) {
+                    if (!a.ra.equals(session.getRa())) {
+                        meusProjetos.add(a);
+                    }
+                }
+                
+                runOnUiThread(() -> projetoAdapter.setProjetos(meusProjetos));
             }
         });
     }
 
+    private void filtrarProjetos(int position) {
+        String statusFiltro;
+        switch (position) {
+            case 1: statusFiltro = "APROVADO"; break;
+            case 2: statusFiltro = "REPROVADO"; break;
+            default: statusFiltro = "PENDENTE"; break;
+        }
+
+        List<Projeto> filtrados = todosProjetos.stream()
+                .filter(p -> p.status.equals(statusFiltro))
+                .collect(Collectors.toList());
+        
+        if (adminAdapter != null) {
+            adminAdapter.setProjetos(filtrados);
+        }
+    }
+
     private String getText(TextInputEditText et) {
-        return et.getText() != null ? et.getText().toString().trim() : "";
+        return et != null && et.getText() != null ? et.getText().toString().trim() : "";
     }
 }

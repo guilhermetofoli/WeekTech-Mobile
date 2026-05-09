@@ -50,97 +50,123 @@
             android:background="#E1E4E8"
             android:layout_marginBottom="16dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="AGENDAR APRESENTAÇÃO"
-            android:textColor="#1B3A6B"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <LinearLayout
+            android:id="@+id/layoutAgendamentoAdmin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:hint="Data da Apresentação"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:startIconDrawable="@drawable/ic_calendar">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editDataApresentacao"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AGENDAR APRESENTAÇÃO"
+                android:textColor="#1B3A6B"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true"
-                android:inputType="none"
-                android:textSize="14sp"
-                android:padding="12dp"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginBottom="8dp"
+                android:hint="Data da Apresentação"
+                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:startIconDrawable="@drawable/ic_calendar">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editDataApresentacao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:textSize="14sp"
+                    android:padding="12dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:hint="Início"
+                    app:boxCornerRadiusTopStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusBottomEnd="8dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editHoraInicio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="time"
+                        android:maxLength="5"
+                        android:textSize="14sp"
+                        android:padding="12dp"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:hint="Fim"
+                    app:boxCornerRadiusTopStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusBottomEnd="8dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editHoraFim"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="time"
+                        android:maxLength="5"
+                        android:textSize="14sp"
+                        android:padding="12dp"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layoutBotoesAcao"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:hint="Início"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editHoraInicio"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="time"
-                    android:maxLength="5"
-                    android:textSize="14sp"
-                    android:padding="12dp"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="8dp"
-                android:hint="Fim"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editHoraFim"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="time"
-                    android:maxLength="5"
-                    android:textSize="14sp"
-                    android:padding="12dp"/>
-            </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="12dp">
 
             <Button
-                android:id="@+id/btnSalvarDataHora"
-                android:layout_width="wrap_content"
+                android:id="@+id/btnReprovar"
+                android:layout_width="0dp"
                 android:layout_height="54dp"
-                android:text="OK"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="REPROVAR"
+                android:backgroundTint="#D32F2F"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                app:cornerRadius="8dp"/>
+
+            <Button
+                android:id="@+id/btnAprovar"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1"
+                android:text="APROVAR"
                 android:backgroundTint="#28A745"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
-                app:cornerRadius="8dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"/>
+                app:cornerRadius="8dp"/>
         </LinearLayout>
 
     </LinearLayout>

@@ -32,6 +32,22 @@
                 android:textColor="#B0BED4"
                 android:textSize="12sp"/>
         </LinearLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutProjetos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:visibility="gone"
+            app:tabIndicatorColor="#1B3A6B"
+            app:tabSelectedTextColor="#1B3A6B"
+            app:tabTextColor="#6B7C93"
+            app:tabMode="fixed">
+            <com.google.android.material.tabs.TabItem android:text="PENDENTES"/>
+            <com.google.android.material.tabs.TabItem android:text="APROVADAS"/>
+            <com.google.android.material.tabs.TabItem android:text="REPROVADAS"/>
+        </com.google.android.material.tabs.TabLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
