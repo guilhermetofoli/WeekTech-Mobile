@@ -218,26 +218,43 @@
                             android:minLines="2"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Dia e Tempo -->
+                    <!-- Data e Tempo -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginBottom="20dp">
-                        <Spinner
-                            android:id="@+id/spinnerDia"
+                        android:layout_marginBottom="20dp"
+                        android:baselineAligned="false">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="0dp"
-                            android:layout_height="48dp"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginEnd="8dp"
-                            android:background="@drawable/spinner_bg"/>
+                            android:hint="Data"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusBottomStart="10dp"
+                            app:boxCornerRadiusBottomEnd="10dp"
+                            app:startIconDrawable="@drawable/ic_calendar">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etAdminData"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:focusable="false"
+                                android:clickable="true"
+                                android:inputType="none"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
                         <Spinner
                             android:id="@+id/spinnerTempo"
                             android:layout_width="0dp"
                             android:layout_height="48dp"
                             android:layout_weight="1"
                             android:layout_marginStart="8dp"
-                            android:background="@drawable/spinner_bg"/>
+                            android:background="@drawable/spinner_bg"
+                            android:layout_gravity="center_vertical"/>
                     </LinearLayout>
 
                     <Button
@@ -271,7 +288,7 @@
             <!-- Espaço extra (respiro) no final da lista -->
             <View
                 android:layout_width="match_parent"
-                android:layout_height="25dp"/>
+                android:layout_height="100dp"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

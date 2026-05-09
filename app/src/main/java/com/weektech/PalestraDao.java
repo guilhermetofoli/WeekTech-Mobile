@@ -26,8 +26,8 @@ public interface PalestraDao {
     LiveData<List<Palestra>> listarTodas();
 
     // lista as palestras de um dia especifico que tao ativas
-    @Query("SELECT * FROM palestras WHERE dia = :diaParam AND ativa = 1")
-    LiveData<List<Palestra>> listarPorDia(int diaParam);
+    @Query("SELECT * FROM palestras WHERE data = :dataParam AND ativa = 1")
+    LiveData<List<Palestra>> listarPorData(String dataParam);
 
     // ativa ou desativa a palestra
     @Query("UPDATE palestras SET ativa = :status WHERE id = :id")

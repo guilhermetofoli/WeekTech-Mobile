@@ -54,28 +54,110 @@
 
         </LinearLayout>
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardSelecionarData"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="#FFFFFF"
-            app:tabGravity="fill"
-            app:tabIndicatorColor="#1B3A6B"
-            app:tabIndicatorHeight="3dp"
-            app:tabMode="fixed"
-            app:tabRippleColor="@android:color/transparent"
-            app:tabSelectedTextColor="#1B3A6B"
-            app:tabTextAppearance="@style/TabTextAppearance"
-            app:tabTextColor="#9AA5B4" />
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_calendar"
+                    app:tint="#1B3A6B" />
+
+                <TextView
+                    android:id="@+id/tvDataSelecionada"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:text="Selecionar Data"
+                    android:textColor="#1B3A6B"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_edit"
+                    app:tint="#6B7C93" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="64dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:paddingBottom="100dp"
+            android:clipToPadding="false">
+
+            <TextView
+                android:id="@+id/tvTituloCronograma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PALESTRAS DO DIA"
+                android:textColor="#1B3A6B"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="12dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPalestrasCronograma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <TextView
+                android:id="@+id/tvTituloProjetosCronograma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="APRESENTAÇÕES DE PROJETOS"
+                android:textColor="#1B3A6B"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvProjetosCronograma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <TextView
+                android:id="@+id/tvSemAtividades"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                android:text="Nenhuma atividade encontrada para esta data."
+                android:textColor="#6B7C93"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"

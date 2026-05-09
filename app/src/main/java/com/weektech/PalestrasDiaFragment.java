@@ -70,7 +70,7 @@ public class PalestrasDiaFragment extends Fragment
         inscricaoDao = db.inscricaoDao();
 
         // pega as palestras do dia e atualiza a tela
-        palestraDao.listarPorDia(dia).observe(getViewLifecycleOwner(), palestras -> {
+        palestraDao.listarPorData(String.valueOf(dia)).observe(getViewLifecycleOwner(), palestras -> {
             if (palestras == null || palestras.isEmpty()) {
                 adapter.setPalestras(new ArrayList<>());
                 return;

@@ -36,6 +36,16 @@
                 android:textColor="#6B7C93"
                 android:textSize="13sp"
                 android:text="Palestrante"/>
+
+            <TextView
+                android:id="@+id/txtDataPalestra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#1B3A6B"
+                android:textSize="11sp"
+                android:textStyle="italic"
+                android:layout_marginTop="2dp"
+                android:text="00/00/0000"/>
         </LinearLayout>
 
         <ImageButton

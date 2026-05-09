@@ -22,7 +22,7 @@ public class Palestra {
     public String horaFim;
     public String local;
     public String descricao;
-    public int    dia;
+    public String data; // Alterado de int dia para String data
     public boolean ativa; // pra saber se a palestra ainda ta valendo
 
     public String getTitulo() {
@@ -49,7 +49,7 @@ public class Palestra {
     @Ignore
     public Palestra(String titulo, String palestrante, String email, String telefone,
                     String briefing, String curriculo, int tempo, String horaInicio,
-                    String horaFim, String local, String descricao, int dia, boolean ativa) {
+                    String horaFim, String local, String descricao, String data, boolean ativa) {
         this.titulo = titulo;
         this.palestrante = palestrante;
         this.email = email;
@@ -61,7 +61,7 @@ public class Palestra {
         this.horaFim = horaFim;
         this.local = local;
         this.descricao = descricao;
-        this.dia = dia;
+        this.data = data;
         this.ativa = ativa;
     }
 }

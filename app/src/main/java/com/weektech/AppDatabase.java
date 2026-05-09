@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 // aumentei a versao pra resetar o banco por causa das mudancas nas tabelas
 @Database(
         entities = {Palestra.class, Inscricao.class, Usuario.class, Projeto.class},
-        version = 17,
+        version = 18,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {

@@ -1,9 +1,11 @@
 package com.weektech;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,25 +23,25 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.weektech.util.SessionManager;
 
+import java.util.Calendar;
+import java.util.Locale;
+
 public class AdminActivity extends AppCompatActivity
         implements AdminPalestraAdapter.OnAdminActionListener {
 
-    // variaveis da tela
     private TextInputEditText etTitulo, etPalestrante, etHoraInicio, etHoraFim,
-            etLocal, etDescricao;
-    private Spinner   spinnerDia, spinnerTempo;
+            etLocal, etDescricao, etData;
+    private Spinner   spinnerTempo;
     private Button    btnSalvarPalestra;
     private RecyclerView rvAdminPalestras;
     private AdminPalestraAdapter adminAdapter;
     private PalestraDao palestraDao;
-    private Palestra palestraSendoEditada = null; // guarda qual palestra to editando
+    private Palestra palestraSendoEditada = null;
     private BottomNavigationView bottomNav;
     private SessionManager session;
     private TextView tvFormTitle;
     private NestedScrollView nestedScrollView;
 
-    // Listas para o Spinner de Tempo
-    private String[] temposLabels;
     private int[] temposValores;
 
     @Override
@@ -50,14 +52,13 @@ public class AdminActivity extends AppCompatActivity
         session = new SessionManager(this);
         palestraDao = AppDatabase.getInstance(this).palestraDao();
 
-        // ligando os componentes do xml
         etTitulo      = findViewById(R.id.etAdminTitulo);
         etPalestrante = findViewById(R.id.etAdminPalestrante);
         etHoraInicio  = findViewById(R.id.etAdminHoraInicio);
         etHoraFim     = findViewById(R.id.etAdminHoraFim);
         etLocal       = findViewById(R.id.etAdminLocal);
         etDescricao   = findViewById(R.id.etAdminDescricao);
-        spinnerDia    = findViewById(R.id.spinnerDia);
+        etData        = findViewById(R.id.etAdminData);
         spinnerTempo  = findViewById(R.id.spinnerTempo);
         btnSalvarPalestra = findViewById(R.id.btnSalvarPalestra);
         rvAdminPalestras  = findViewById(R.id.rvAdminPalestras);
@@ -65,31 +66,18 @@ public class AdminActivity extends AppCompatActivity
         tvFormTitle   = findViewById(R.id.tvAdminFormTitle);
         nestedScrollView = findViewById(R.id.nestedScrollViewAdmin);
 
-        // configura o spinner dos dias
-        ArrayAdapter<String> adapterDia = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
-                new String[]{"Dia 1", "Dia 2", "Dia 3"});
-        adapterDia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDia.setAdapter(adapterDia);
-
-        // spinner do tempo (presets)
-        String[] temposLabelsPreset = {"15 minutos", "30 minutos", "45 minutos", "60 minutos", "1h 15min", "1h 30min"};
-        // Note: these presets might be overwritten by prepararTempos() later if they are not compatible.
-        // Actually prepararTempos() is called below.
-
-        // configura a lista de palestras
         rvAdminPalestras.setLayoutManager(new LinearLayoutManager(this));
         adminAdapter = new AdminPalestraAdapter(this);
         rvAdminPalestras.setAdapter(adminAdapter);
 
-        // observa as palestras do banco
         palestraDao.listarTodas().observe(this, palestras ->
                 adminAdapter.setPalestras(palestras));
 
         prepararTempos();
+        configurarDatePicker();
+        
         btnSalvarPalestra.setOnClickListener(v -> salvarPalestra());
 
-        // abre a tela de gerenciar alunos
         findViewById(R.id.btnGerenciarAlunos).setOnClickListener(v -> {
             startActivity(new Intent(this, ListaAlunosActivity.class));
         });
@@ -98,13 +86,32 @@ public class AdminActivity extends AppCompatActivity
         configurarNavegacao();
     }
 
+    private void configurarDatePicker() {
+        if (etData == null) return;
+        etData.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePicker = new DatePickerDialog(this,
+                    R.style.CustomDatePickerDialog,
+                    (view, selectedYear, selectedMonth, selectedDay) -> {
+                        String date = String.format(Locale.getDefault(), "%02d/%02d/%d", selectedDay, selectedMonth + 1, selectedYear);
+                        etData.setText(date);
+                    }, year, month, day);
+
+            datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+            datePicker.show();
+        });
+    }
+
     private void prepararTempos() {
-        // Gera tempos de 15 em 15 minutos até 5 horas (300 min) + Dia Inteiro
         int maxMinutos = 300;
         int passo = 15;
-        int quantidade = (maxMinutos / passo) + 1; // +1 para o "Dia Inteiro"
+        int quantidade = (maxMinutos / passo) + 1;
         
-        temposLabels = new String[quantidade];
+        String[] temposLabels = new String[quantidade];
         temposValores = new int[quantidade];
 
         for (int i = 0; i < quantidade - 1; i++) {
@@ -124,9 +131,8 @@ public class AdminActivity extends AppCompatActivity
             }
         }
         
-        // Adiciona a opção de Dia Inteiro
         temposLabels[quantidade - 1] = "Dia Inteiro";
-        temposValores[quantidade - 1] = 1440; // 24 horas
+        temposValores[quantidade - 1] = 1440;
 
         ArrayAdapter<String> adapterTempo = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, temposLabels);
@@ -134,7 +140,6 @@ public class AdminActivity extends AppCompatActivity
         spinnerTempo.setAdapter(adapterTempo);
     }
 
-    // aplica mascara de hora (HH:mm) nos campos de horario
     private void aplicarMascaras() {
         aplicarMascaraHora(etHoraInicio);
         aplicarMascaraHora(etHoraFim);
@@ -151,21 +156,20 @@ public class AdminActivity extends AppCompatActivity
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isUpdating) return;
 
-                String str = s.toString().replaceAll("[^\\d]", "");
+                String str = s.toString().replaceAll("\\D", "");
                 if (str.length() > 4) str = str.substring(0, 4);
 
-                // Validação de limites (00:00 a 23:59)
-                if (str.length() >= 1) {
+                if (!str.isEmpty()) {
                     int h1 = Integer.parseInt(str.substring(0, 1));
-                    if (h1 > 2) str = "2"; // Primeiro dígito da hora max 2
+                    if (h1 > 2) str = "2";
                 }
                 if (str.length() >= 2) {
                     int hora = Integer.parseInt(str.substring(0, 2));
-                    if (hora > 23) str = "23"; // Hora max 23
+                    if (hora > 23) str = "23";
                 }
                 if (str.length() >= 3) {
                     int m1 = Integer.parseInt(str.substring(2, 3));
-                    if (m1 > 5) str = str.substring(0, 2) + "5"; // Primeiro dígito do minuto max 5
+                    if (m1 > 5) str = str.substring(0, 2) + "5";
                 }
 
                 String formatted = str;
@@ -184,7 +188,6 @@ public class AdminActivity extends AppCompatActivity
         });
     }
 
-    // menu de baixo
     private void configurarNavegacao() {
         bottomNav.setSelectedItemId(R.id.nav_admin);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -201,14 +204,10 @@ public class AdminActivity extends AppCompatActivity
                 startActivity(new Intent(this, PerfilActivity.class));
                 finish();
                 return true;
-            } else if (id == R.id.nav_admin) {
-                return true;
-            }
-            return false;
+            } else return id == R.id.nav_admin;
         });
     }
 
-    // funcao pra salvar ou atualizar
     private void salvarPalestra() {
         String titulo     = getText(etTitulo);
         String palestrante= getText(etPalestrante);
@@ -216,23 +215,21 @@ public class AdminActivity extends AppCompatActivity
         String horaFim    = getText(etHoraFim);
         String local      = getText(etLocal);
         String descricao  = getText(etDescricao);
-        int    dia        = spinnerDia.getSelectedItemPosition() + 1;
+        String data       = getText(etData);
         int    tempo      = temposValores[spinnerTempo.getSelectedItemPosition()];
 
-        if (titulo.isEmpty() || palestrante.isEmpty() || horaInicio.isEmpty() || horaFim.isEmpty()) {
-            Toast.makeText(this, "Preencha os campos obrigatórios!", Toast.LENGTH_SHORT).show();
+        if (titulo.isEmpty() || palestrante.isEmpty() || horaInicio.isEmpty() || horaFim.isEmpty() || data.isEmpty()) {
+            Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Validação extra de segurança para formato HH:mm completo
         if (horaInicio.length() < 5 || horaFim.length() < 5) {
-            Toast.makeText(this, "Preencha o horário completo (ex: 09:00)", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Preencha o horário completo!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         btnSalvarPalestra.setEnabled(false);
 
-        // se for edicao usa a mesma, senao cria nova
         Palestra p = (palestraSendoEditada != null) ? palestraSendoEditada : new Palestra();
         p.titulo = titulo;
         p.palestrante = palestrante;
@@ -241,7 +238,7 @@ public class AdminActivity extends AppCompatActivity
         p.horaFim = horaFim;
         p.local = local;
         p.descricao = descricao;
-        p.dia = dia;
+        p.data = data;
         p.ativa = true;
 
         AppDatabase.databaseExecutor.execute(() -> {
@@ -263,7 +260,6 @@ public class AdminActivity extends AppCompatActivity
 
     @Override
     public void onEditPalestra(Palestra palestra) {
-        // preenche o form com os dados pra editar
         palestraSendoEditada = palestra;
         etTitulo.setText(palestra.titulo);
         etPalestrante.setText(palestra.palestrante);
@@ -271,9 +267,8 @@ public class AdminActivity extends AppCompatActivity
         etHoraFim.setText(palestra.horaFim);
         etLocal.setText(palestra.local);
         etDescricao.setText(palestra.descricao);
-        spinnerDia.setSelection(palestra.dia - 1);
+        etData.setText(palestra.data);
         
-        // seleciona o tempo correto no spinner baseado no valor do banco
         for (int i = 0; i < temposValores.length; i++) {
             if (temposValores[i] == palestra.tempo) {
                 spinnerTempo.setSelection(i);
@@ -283,8 +278,6 @@ public class AdminActivity extends AppCompatActivity
         
         btnSalvarPalestra.setText("ATUALIZAR PALESTRA");
         tvFormTitle.setText("EDITAR PALESTRA");
-        
-        // sobe a tela para o formulario usando o scroll
         nestedScrollView.smoothScrollTo(0, 0);
     }
 
@@ -312,10 +305,10 @@ public class AdminActivity extends AppCompatActivity
     private void limparCampos() {
         etTitulo.setText(""); etPalestrante.setText("");
         etHoraInicio.setText(""); etHoraFim.setText(""); etLocal.setText("");
-        etDescricao.setText("");
+        etDescricao.setText(""); etData.setText("");
     }
 
     private String getText(TextInputEditText et) {
-        return et.getText() != null ? et.getText().toString().trim() : "";
+        return et != null && et.getText() != null ? et.getText().toString().trim() : "";
     }
 }

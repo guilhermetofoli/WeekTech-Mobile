@@ -18,7 +18,6 @@ public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdap
     private Context context;
     private OnAdminActionListener listener;
 
-    // interface pras acoes do admin
     public interface OnAdminActionListener {
         void onToggleAtiva(Palestra palestra);
         void onDeletePalestra(Palestra palestra);
@@ -29,9 +28,8 @@ public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdap
         this.listener = listener;
     }
 
-    // atualiza a lista toda
     public void setPalestras(List<Palestra> palestras) {
-        this.palestras = palestras;
+        this.palestras = palestras != null ? palestras : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -51,8 +49,8 @@ public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdap
 
         holder.titulo.setText(palestra.titulo);
         holder.palestrante.setText(palestra.palestrante);
+        holder.data.setText(palestra.data != null ? palestra.data : "Data não definida");
 
-        // cliques nos botoes de editar e excluir
         holder.btnEditar.setOnClickListener(v -> {
             if (listener != null) listener.onEditPalestra(palestra);
         });
@@ -64,17 +62,18 @@ public class AdminPalestraAdapter extends RecyclerView.Adapter<AdminPalestraAdap
 
     @Override
     public int getItemCount() {
-        return palestras != null ? palestras.size() : 0;
+        return palestras.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView titulo, palestrante;
+        TextView titulo, palestrante, data;
         ImageButton btnEditar, btnExcluir;
 
         ViewHolder(View itemView) {
             super(itemView);
             titulo = itemView.findViewById(R.id.txtTituloPalestra);
             palestrante = itemView.findViewById(R.id.txtPalestrante);
+            data = itemView.findViewById(R.id.txtDataPalestra);
             btnEditar = itemView.findViewById(R.id.btnEditarPalestra);
             btnExcluir = itemView.findViewById(R.id.btnExcluirPalestra);
         }
