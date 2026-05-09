@@ -61,6 +61,7 @@ public class ProjetoAdapterAdmin extends RecyclerView.Adapter<ProjetoAdapterAdmi
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePicker = new DatePickerDialog(holder.itemView.getContext(),
+                    R.style.CustomDatePickerDialog,
                     (view, selectedYear, selectedMonth, selectedDay) -> {
                         String date = String.format(Locale.getDefault(), "%02d/%02d/%d", selectedDay, selectedMonth + 1, selectedYear);
                         holder.editData.setText(date);
